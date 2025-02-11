@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Allocation – Ribasim</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../concept/core.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-54ffc10b7d59450cb53583785f168d21.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="https://user-images.githubusercontent.com/4471859/224825908-bee7e044-bc6b-4561-8b08-5d330cce3ed5.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Ribasim</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Overview</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorial/natural-flow.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../guide/examples.html"> 
+<span class="menu-text">How-to guides</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../concept/concept.html" aria-current="page"> 
+<span class="menu-text">Concepts</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../reference/index.html"> 
+<span class="menu-text">Reference</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../dev/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/Deltares/Ribasim"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../concept/core.html">Implementation</a></li><li class="breadcrumb-item"><a href="../concept/allocation.html">Allocation</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../concept/concept.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Numerics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../concept/modelconcept.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model concept</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../concept/equations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Equations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../concept/numerics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Numerical considerations</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Implementation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../concept/core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Julia core</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../concept/allocation.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Allocation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#sec-high-level-algorithm" id="toc-sec-high-level-algorithm" class="nav-link" data-scroll-target="#sec-high-level-algorithm"><span class="header-section-number">2</span> The high level algorithm</a></li>
+  <li><a href="#elements-of-allocation" id="toc-elements-of-allocation" class="nav-link" data-scroll-target="#elements-of-allocation"><span class="header-section-number">3</span> Elements of allocation</a>
+  <ul class="collapse">
+  <li><a href="#schematisation-input" id="toc-schematisation-input" class="nav-link" data-scroll-target="#schematisation-input"><span class="header-section-number">3.1</span> Schematisation input</a>
+  <ul class="collapse">
+  <li><a href="#the-subnetwork" id="toc-the-subnetwork" class="nav-link" data-scroll-target="#the-subnetwork"><span class="header-section-number">3.1.1</span> The subnetwork</a></li>
+  <li><a href="#source-flows" id="toc-source-flows" class="nav-link" data-scroll-target="#source-flows"><span class="header-section-number">3.1.2</span> Source flows</a></li>
+  <li><a href="#user-demands" id="toc-user-demands" class="nav-link" data-scroll-target="#user-demands"><span class="header-section-number">3.1.3</span> User demands</a></li>
+  <li><a href="#flow-demands" id="toc-flow-demands" class="nav-link" data-scroll-target="#flow-demands"><span class="header-section-number">3.1.4</span> Flow demands</a></li>
+  </ul></li>
+  <li><a href="#simulation-physical-layer-input" id="toc-simulation-physical-layer-input" class="nav-link" data-scroll-target="#simulation-physical-layer-input"><span class="header-section-number">3.2</span> Simulation (physical layer) input</a>
+  <ul class="collapse">
+  <li><a href="#vertical-fluxes-and-local-storage" id="toc-vertical-fluxes-and-local-storage" class="nav-link" data-scroll-target="#vertical-fluxes-and-local-storage"><span class="header-section-number">3.2.1</span> Vertical fluxes and local storage</a></li>
+  <li><a href="#constraining-factors" id="toc-constraining-factors" class="nav-link" data-scroll-target="#constraining-factors"><span class="header-section-number">3.2.2</span> Constraining factors</a></li>
+  </ul></li>
+  <li><a href="#the-subnetwork-1" id="toc-the-subnetwork-1" class="nav-link" data-scroll-target="#the-subnetwork-1"><span class="header-section-number">3.3</span> The subnetwork</a>
+  <ul class="collapse">
+  <li><a href="#capacities" id="toc-capacities" class="nav-link" data-scroll-target="#capacities"><span class="header-section-number">3.3.1</span> Capacities</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#the-optimization-problem" id="toc-the-optimization-problem" class="nav-link" data-scroll-target="#the-optimization-problem"><span class="header-section-number">4</span> The optimization problem</a>
+  <ul class="collapse">
+  <li><a href="#the-optimization-variables" id="toc-the-optimization-variables" class="nav-link" data-scroll-target="#the-optimization-variables"><span class="header-section-number">4.1</span> The optimization variables</a></li>
+  <li><a href="#the-optimization-objective" id="toc-the-optimization-objective" class="nav-link" data-scroll-target="#the-optimization-objective"><span class="header-section-number">4.2</span> The optimization objective</a></li>
+  <li><a href="#the-optimization-constraints" id="toc-the-optimization-constraints" class="nav-link" data-scroll-target="#the-optimization-constraints"><span class="header-section-number">4.3</span> The optimization constraints</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example"><span class="header-section-number">4.4</span> Example</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../concept/core.html">Implementation</a></li><li class="breadcrumb-item"><a href="../concept/allocation.html">Allocation</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Allocation</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>Allocation is the process of assigning an allocated flow rate to demand nodes in the physical layer of the model based on information about sources and their source priorities, the different demand nodes over various demand priorities, constraints introduced by nodes, local water availability and graph topology. The allocation procedure implemented in Ribasim is heavily inspired by the <a href="https://en.wikipedia.org/wiki/Maximum_flow_problem">maximum flow problem</a>.</p>
+<p>The allocation problem is solved per subnetwork (and main network) of the Ribasim model. Each subnetwork is used to formulate an optimization problem with the <a href="https://jump.dev/JuMP.jl/stable/">JuMP</a> package, which is solved using the <a href="https://highs.dev/">HiGHS solver</a>. For more in-depth information see also the example of solving the maximum flow problem with <code>JuMP.jl</code> <a href="https://jump.dev/JuMP.jl/stable/tutorials/linear/network_flows/#The-max-flow-problem">here</a>.</p>
+<p>Before the optimization for each priority there is a simple step that tries to allocate flow to the UserDemand nodes from the Basin directly upstream.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>within this <em>Allocation</em> section the main network is also considered to be a subnetwork.</p>
+</div>
+</div>
+</section>
+<section id="sec-high-level-algorithm" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> The high level algorithm</h1>
+<p>The allocation algorithm contains 3 types of optimization:</p>
+<ul>
+<li><code>internal_sources</code>, where flows are allocated within a subnetwork by only using sources inside the subnetwork;</li>
+<li><code>collect_demands</code>, where flows are allocated within a subnetwork by only using the main network inlet(s) as a source, with demands reduced by allocations in <code>internal_sources</code>. The allocated flows in this optimization type are not used. The goal is to see the flow through the main network inlet(s), which is interpreted as the subnetwork demand;</li>
+<li><code>allocate</code>, where all available sources are used and the final allocated flows for the users are determined.</li>
+</ul>
+<p>The full algorithm goes through the following steps:</p>
+<ol type="1">
+<li>Perform <code>internal_sources</code> followed by <code>collect_demands</code> for all subnetworks apart from the main network;</li>
+<li>Perform <code>allocate</code> for the main network;</li>
+<li>Perform <code>allocate</code> for the other subnetworks.</li>
+</ol>
+<p>If no main network is present, then 1 and 2 are skipped.</p>
+</section>
+<section id="elements-of-allocation" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Elements of allocation</h1>
+<p>The following data of the parameters and state of a Ribasim model are relevant for the allocation problem.</p>
+<section id="schematisation-input" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="schematisation-input"><span class="header-section-number">3.1</span> Schematisation input</h2>
+<section id="the-subnetwork" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="the-subnetwork"><span class="header-section-number">3.1.1</span> The subnetwork</h3>
+<p>The allocation problem is solved per subnetwork, which is given by a subset <span class="math inline">\(S \subset V\)</span> of node IDs. Different subnetworks are disjoint from each other. Nodes can also not be part of any subnetwork.</p>
+</section>
+<section id="source-flows" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="source-flows"><span class="header-section-number">3.1.2</span> Source flows</h3>
+<p>Sources are indicated by a set of links in the subnetwork <span class="math display">\[
+E_S^\text{source} \subset E,
+\]</span> which are automatically inferred as all links that point out of LevelBoundary or FlowBoundary nodes. That is, if <span class="math inline">\((i,j) \in E_S^\text{source}\)</span>, then the average over the last allocation interval <span class="math inline">\(\Delta t_{\text{alloc}}\)</span> of the of the flow over this link <span class="math display">\[
+    \frac{1}{\Delta t_{\text{alloc}}}\int_{t - \Delta t_{\text{alloc}}}^tQ_{ij}(t') dt'
+\]</span> is treated as a source flow in the allocation problem. These links are either coming from a boundary/source node (e.g.&nbsp;a level or flow boundary) or connect the main network to a subnetwork. For the definition of <span class="math inline">\(Q_{ij}\)</span> see <a href="../concept/equations.html#formal-model-description">the formal model description</a>.</p>
+</section>
+<section id="user-demands" class="level3" data-number="3.1.3">
+<h3 data-number="3.1.3" class="anchored" data-anchor-id="user-demands"><span class="header-section-number">3.1.3</span> User demands</h3>
+<p>The subnetwork contains a subset of UserDemand nodes <span class="math inline">\(U_S \subset S\)</span>, who all have static or time varying demands over various priorities <span class="math inline">\(p\)</span>: <span class="math display">\[
+    d^p_i(t), \quad i \in U_S, p = 1,2,\ldots, p_{\max}.
+\]</span></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>On this page we assume that the priorities are given by all integers from <span class="math inline">\(1\)</span> to some <span class="math inline">\(p_{\max} \in \mathbb{N}\)</span>. For the Ribasim input this is not a requirement; some of these in between priority values can be missing, only the ordering of the given priorities is taken into account.</p>
+</div>
+</div>
+</section>
+<section id="flow-demands" class="level3" data-number="3.1.4">
+<h3 data-number="3.1.4" class="anchored" data-anchor-id="flow-demands"><span class="header-section-number">3.1.4</span> Flow demands</h3>
+<p>The subnetwork contains a subset of nodes <span class="math inline">\(FD_S \subset S\)</span> which have a demand of a single priority <span class="math inline">\(p_{\text{fd}}\)</span> for the flow through that node. With this we define <span class="math display">\[
+    d^p_i(t) =
+    \begin{cases}
+        0 \text{ if } p \ne p_{\text{fd}} \\
+        d^{p_{\text{df}}} \text{ if } p = p_{\text{fd}}
+    \end{cases}
+\]</span> for all <span class="math inline">\(i \in FD_S\)</span>. Here <span class="math inline">\(d^{p_{\text{df}}}\)</span> is given by the original flow demand minus the flows trough node <span class="math inline">\(i\)</span> at all priorities <span class="math inline">\(p &lt; p_{\text{fd}}\)</span>.</p>
+</section>
+</section>
+<section id="simulation-physical-layer-input" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="simulation-physical-layer-input"><span class="header-section-number">3.2</span> Simulation (physical layer) input</h2>
+<section id="vertical-fluxes-and-local-storage" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="vertical-fluxes-and-local-storage"><span class="header-section-number">3.2.1</span> Vertical fluxes and local storage</h3>
+<p>Apart from the source flows denoted by links, there are other sources of water in the subnetwork, associated with the Basins in the subnetwork <span class="math inline">\(B_S = B \cap S\)</span>. First, there is the average over the last allocation interval <span class="math inline">\(\Delta t_{\text{alloc}}\)</span> of the vertical fluxes (precipitation, evaporation, infiltration and drainage) for each Basin: <span class="math display">\[
+    \phi_i(t) = \frac{1}{\Delta t_{\text{alloc}}}\int_{t - \Delta t_{\text{alloc}}}^t \left[Q_{P,i}(t') - Q_{E,i}(t') + Q_{\text{drn},i}(t') - Q_{\text{inf},i}(t') \right] dt', \quad \forall i \in B_S.
+\]</span></p>
+<p>We consider fluxes into the basin to be positive and out of the basin to be negative. For more information see <a href="../concept/equations.html#natural-water-balance-terms">the natural water balance terms</a>.</p>
+<p>Secondly, there is either a supply or demand from the storage in the Basin if the Basin has a level demand. Given a minimum level <span class="math inline">\(\ell_{\min, i}\)</span> and a maximum level <span class="math inline">\(\ell_{\max, i}\)</span> which correspond to a minimum storage <span class="math inline">\(s_{\min, i}\)</span> and maximum storage <span class="math inline">\(s_{\max, i}\)</span> respectively, we get a flow supply of <span class="math display">\[
+    F^{\text{basin out}}_{\max, i} = \max\left(0.0, \frac{u_i(t)-s_{\max,i}}{\Delta t_{\text{alloc}}} + \phi_i(t)\right)
+\]</span></p>
+<p>and a demand of <span class="math display">\[
+    d^p_i = \max\left(0.0, \frac{s_{\min,i} - u_i(t)}{\Delta t_{\text{alloc}}} - \phi_i(t)\right),
+\]</span></p>
+<p>for all <span class="math inline">\(i \in B_S\)</span>. Note that the basin demand has only a single priority, so for other priorities this demand is <span class="math inline">\(0\)</span>.</p>
+</section>
+<section id="constraining-factors" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="constraining-factors"><span class="header-section-number">3.2.2</span> Constraining factors</h3>
+<section id="flow-magnitude-and-direction-constraints" class="level4" data-number="3.2.2.1">
+<h4 data-number="3.2.2.1" class="anchored" data-anchor-id="flow-magnitude-and-direction-constraints"><span class="header-section-number">3.2.2.1</span> Flow magnitude and direction constraints</h4>
+<p>Nodes in the Ribasim model that have a <code>max_flow_rate</code>, i.e.&nbsp;Pump, Outlet and LinearResistance, put a constraint on the flow through that node. Some nodes only allow flow in one direction, like Pump, Outlet and TabulatedRatingCurve.</p>
+</section>
+<section id="userdemand-return-flows" class="level4" data-number="3.2.2.2">
+<h4 data-number="3.2.2.2" class="anchored" data-anchor-id="userdemand-return-flows"><span class="header-section-number">3.2.2.2</span> UserDemand return flows</h4>
+<p>UserDemand nodes dictate proportional relationships between flows over links in the subnetwork. The return factor is given by <span class="math inline">\(0 \le r_i(t) \le 1, i \in U_S\)</span>.</p>
+</section>
+</section>
+</section>
+<section id="the-subnetwork-1" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="the-subnetwork-1"><span class="header-section-number">3.3</span> The subnetwork</h2>
+<p>The subnetwork consists of a set of nodes <span class="math inline">\(S \subset V\)</span> and links</p>
+<p><span class="math display">\[
+    E_S = (S \times S) \cup E_S^\text{source},
+\]</span></p>
+<p>i.e.&nbsp;the links that lie within the subnetwork together with the source links (which can be partially outside the subnetwork). The nodes in <span class="math inline">\(S\)</span> together with the connected nodes outside the subnetwork are called the extended subnetwork.</p>
+<section id="capacities" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="capacities"><span class="header-section-number">3.3.1</span> Capacities</h3>
+<p>Each link in the subnetwork has an associated capacity. These capacities are collected in the sparse capacity matrix <span class="math inline">\(C_S \in \overline{\mathbb{R}}_{\ge 0}^{n\times n}\)</span> where <span class="math inline">\(n\)</span> is the number of nodes in the extended subnetwork. An link capacity is infinite if there is nothing in the model constraining the capacity.</p>
+<p>The capacities are determined in different ways:</p>
+<ul>
+<li>If an link does not exist in the allocation network, i.e.&nbsp;<span class="math inline">\((i,j) \notin E_S\)</span> for certain <span class="math inline">\(1 \le i,j\le n'\)</span>, then <span class="math inline">\((C_S)_{i,j} = 0\)</span>;</li>
+<li>The capacity of the link <span class="math inline">\(e \in E_S\)</span> is given by the smallest <code>max_flow_rate</code> of the nodes along the equivalent links in the subnetwork. If there are no nodes with a <code>max_flow_rate</code>, the link capacity is infinite;</li>
+<li>If the link is a source, the capacity of the link is given by the flow rate of that source;</li>
+</ul>
+<p>There are also capacities for special links:</p>
+<ul>
+<li><span class="math inline">\(C^{LD}_S \in \mathbb{R}^b_{\ge 0}\)</span> where <span class="math inline">\(b = \# B_S\)</span> is the number of basins, for the flow supplied by basins based on level demand (this capacity is 0 for basins that have no level demand).</li>
+<li><span class="math inline">\(C^{FD}_S \in \mathbb{R}^c_{\ge 0}\)</span> where <span class="math inline">\(c = \# FD_S\)</span> is the number of nodes with a flow demand, for the flow supplied by flow buffers at these nodes with a flow demand.</li>
+<li><span class="math inline">\(C^{UD}_S \in \mathbb{R}^f_{\ge 0}\)</span> where <span class="math inline">\(f = \# U_S\)</span>, for the flow supplied by the user demand outflow source whose capacity is given by return flows.</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="the-optimization-problem" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> The optimization problem</h1>
+<p>The optimization problem for a subnetwork consists of a quadratic objective function with associated linear constraints on a set of variables, all of which are introduced below.</p>
+<section id="the-optimization-variables" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="the-optimization-variables"><span class="header-section-number">4.1</span> The optimization variables</h2>
+<p>There are several types of variable whose value has to be determined to solve the allocation problem:</p>
+<ul>
+<li>The flows <span class="math inline">\(F \in \mathbb{R}_{\ge 0}^{n\times n}\)</span> over the links in the allocation network;</li>
+<li>The flows <span class="math inline">\(F^\text{basin out}_{i}, F^\text{basin in}_{i} \geq 0\)</span> for all <span class="math inline">\(i \in B_S\)</span> supplied and consumed by the basins with a level demand respectively;</li>
+<li>The flows <span class="math inline">\(F^\text{buffer out}_{i}, F^\text{buffer in}_{i} \ge 0\)</span> for all <span class="math inline">\(i \in FD_S \cup FF_S\)</span> supplied and consumed by the flow buffers of nodes with a flow demand.</li>
+</ul>
+</section>
+<section id="the-optimization-objective" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="the-optimization-objective"><span class="header-section-number">4.2</span> The optimization objective</h2>
+<p>The goal of allocation is to get the flow to nodes with demands as close as possible to these demands. To achieve this, a sum of error terms is minimized.</p>
+<p><span class="math display">\[
+    \min E_{\text{user demand}} + E_{\text{level demand}} + E_{\text{flow demand}}
+\]</span></p>
+<p>The error between the flows and user demands is denoted by <span class="math inline">\(E_{\text{user demand}}\)</span>, where <span class="math display">\[
+    E_{\text{user demand}} = \sum_{(i,j)\in E_S\;:\; i\in U_S} d_j^p(t)\left(1 - \frac{F_{ij}}{d_j^p(t)}\right)^2
+\]</span></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When performing main network allocation, the connections to subnetworks are also interpreted as UserDemand nodes with demands determined by subnetwork demand collection.</p>
+</div>
+</div>
+<p>This type of objective cares about the fraction of the demand allocated, and will lead to an equal fraction of all demands allocated when possible. For a discussion on this see <a href="https://github.com/Deltares/Ribasim/pull/1366">here</a>.</p>
+<p>Likewise, the error of level demands from basins is the squared relative difference between flows consumed by basins and basin demands. <span class="math display">\[
+    E_{\text{level demand}} = \sum_{i \in B_S} d_i^p(t)\left(1 - \frac{F_i^\text{basin in}}{d_i^p(t)}\right)^2
+\]</span></p>
+<p>Lastly, the error of the flow demands is given as below. <span class="math display">\[
+    E_{\text{flow demand}} = \sum_{i \in FD_S} d_i^p(t)\left(1 -  \frac{F_i^\text{buffer in}}{d_i^p(t)}\right)^2
+\]</span></p>
+</section>
+<section id="the-optimization-constraints" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="the-optimization-constraints"><span class="header-section-number">4.3</span> The optimization constraints</h2>
+<p>For convenience, we use the notation</p>
+<p><span class="math display">\[\begin{align}
+    V^{\text{out}}_S(i) = \left\{j \in V : (i,j) \in E_S\right\} \\
+    V^{\text{in}}_S(j) = \left\{i \in V : (i,j) \in E_S\right\}
+\end{align}\]</span></p>
+<p>for the set of in-neighbors and out-neighbors of a node in the network respectively.</p>
+<ul>
+<li>Flow conservation: For all nodes <span class="math inline">\(k\)</span> that are not a source or a sink (i.e.&nbsp;<code>FlowBoundary</code>, <code>LevelBoundary</code>, <code>UserDemand</code>) we have a flow conservation constraint: <span id="eq-flowconservationconstraintbasin"><span class="math display">\[
+  \sum F_{\text{out special}} + \sum_{j \in V^{\text{out}}_S(k)} F_{kj} = \sum F_{\text{in special}} + \sum_{i \in V^{\text{in}}_S(k)} F_{ik}, \quad \forall k \in B_S.
+\tag{1}\]</span></span></li>
+</ul>
+<p>In here, we have the following special flows:</p>
+<ul>
+<li>If <span class="math inline">\(k\)</span> is a basin with a flow demand, there is a special outflow <span class="math inline">\(F^{\text{basin in}}_k\)</span> and a special inflow <span class="math inline">\(F^{\text{basin out}}_k\)</span>;</li>
+<li>If the node has a buffer (see <a href="#the-optimization-variables">here</a>) there is a special outflow <span class="math inline">\(F^{\text{buffer in}}_k\)</span> and a special inflow <span class="math inline">\(F^{\text{buffer out}}_k\)</span>.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the above, the placement of the basin and buffer flows might seem counter-intuitive. Think of the storage or buffer as a separate node connected to the node with the demand.</p>
+</div>
+</div>
+<ul>
+<li>Capacity: the flows over the links are bounded by the link capacity: <span id="eq-capacityconstraint"><span class="math display">\[
+  F_{ij} \le \left(C_S\right)_{ij}, \quad \forall(i,j) \in E_S.
+\tag{2}\]</span></span> By the definition of <span class="math inline">\(C_S\)</span> this also includes the source flows. The same holds for the basin outflows:</li>
+</ul>
+<p><span class="math display">\[
+    F^{\text{basin out}}_{i} \le F^{\text{basin out}}_{\max, i}, \quad \forall i \in B_S.
+\]</span></p>
+<p>There are several things to note about the source constraints: - The sources are not all used at once. There is an optimization for each source in a subnetwork, where only one source has nonzero capacity. - When performing subnetwork demand collection, these capacities are set to <span class="math inline">\(\infty\)</span> for links which connect the main network to a subnetwork.</p>
+<p>Similar constraints hold for the flow out of basins, flow demand buffers and user demand outflow sources: <span class="math display">\[
+F^\text{basin out}_{i} \le (C^{FD}_S)_i, \quad \forall i \in B_S,
+\]</span></p>
+<p><span class="math display">\[
+F^\text{buffer out}_{i} \le (C^{FD}_S)_i, \quad \forall i \in FD_S,
+\]</span></p>
+<p><span class="math display">\[
+F_{ij} \le (C^{UD}_S)_i, \quad \forall i \in U_S, \quad V_S^{\text{out}}(i) = \{j\}.
+\]</span> Here we use that each UserDemand node in the allocation network has a unique outflow link. The user outflow source capacities are increased after each optimization solve by the return fraction: <span class="math display">\[
+    r_i(t) \cdot F_{ki}, \quad V_S^{\text{in}}(i) = \{k\}.
+\]</span></p>
+<ul>
+<li>Flow sign: Furthermore there are the non-negativity constraints for the flows and allocations, see <a href="../concept/allocation.html#the-optimization-variables">The optimization variables</a>.</li>
+</ul>
+</section>
+<section id="example" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="example"><span class="header-section-number">4.4</span> Example</h2>
+<p>The following is an example of an optimization problem for the example shown <a href="../guide/examples.html#model-with-allocation-user-demand">here</a>:</p>
+<div id="31f28044" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Ribasim</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Ribasim</span>: NodeID</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">SQLite</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">ComponentArrays</span>: ComponentVector</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>toml_path <span class="op">=</span> <span class="fu">normpath</span>(<span class="pp">@__DIR__</span>, <span class="st">"../../generated_testmodels/allocation_example/ribasim.toml"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> Ribasim.<span class="fu">Model</span>(toml_path)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>(; u, p, t) <span class="op">=</span> model.integrator</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>allocation_model <span class="op">=</span> p.allocation.allocation_models[<span class="fl">1</span>]</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>priority_idx <span class="op">=</span> <span class="fl">1</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>Ribasim.<span class="fu">set_initial_values!</span>(allocation_model, u, p, t)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>Ribasim.<span class="fu">set_objective_demand_priority!</span>(allocation_model, u, p, t, priority_idx)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">println</span>(p.allocation.allocation_models[<span class="fl">1</span>].problem)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Min 0.6666666666666666 F[(Basin #2, UserDemand #3)]² + F[(Basin #5, UserDemand #6)]² - 2 F[(Basin #2, UserDemand #3)] + 1.5
+Subject to
+ source_boundary[(FlowBoundary #1, Basin #2)] : F[(FlowBoundary #1, Basin #2)] ≤ 0
+ source_user[UserDemand #6] : F[(UserDemand #6, Basin #5)] ≤ 0
+ source_user[UserDemand #3] : F[(UserDemand #3, Basin #2)] ≤ 0
+ flow_conservation[Basin #2] : F[(UserDemand #3, Basin #2)] - F[(Basin #2, UserDemand #3)] - F[(Basin #2, LinearResistance #4)] + F[(LinearResistance #4, Basin #2)] + F[(FlowBoundary #1, Basin #2)] = 0
+ flow_conservation[Terminal #8] : F[(TabulatedRatingCurve #7, Terminal #8)] = 0
+ flow_conservation[Basin #5] : F[(UserDemand #6, Basin #5)] - F[(Basin #5, TabulatedRatingCurve #7)] + F[(LinearResistance #4, Basin #5)] - F[(Basin #5, LinearResistance #4)] - F[(Basin #5, UserDemand #6)] = 0
+ flow_conservation[LinearResistance #4] : -F[(LinearResistance #4, Basin #5)] + F[(Basin #5, LinearResistance #4)] + F[(Basin #2, LinearResistance #4)] - F[(LinearResistance #4, Basin #2)] = 0
+ flow_conservation[TabulatedRatingCurve #7] : F[(Basin #5, TabulatedRatingCurve #7)] - F[(TabulatedRatingCurve #7, Terminal #8)] = 0
+ F[(UserDemand #6, Basin #5)] ≥ 0
+ F[(UserDemand #3, Basin #2)] ≥ 0
+ F[(Basin #5, TabulatedRatingCurve #7)] ≥ 0
+ F[(LinearResistance #4, Basin #5)] ≥ 0
+ F[(Basin #5, LinearResistance #4)] ≥ 0
+ F[(Basin #2, UserDemand #3)] ≥ 0
+ F[(Basin #2, LinearResistance #4)] ≥ 0
+ F[(LinearResistance #4, Basin #2)] ≥ 0
+ F[(Basin #5, UserDemand #6)] ≥ 0
+ F[(FlowBoundary #1, Basin #2)] ≥ 0
+ F[(TabulatedRatingCurve #7, Terminal #8)] ≥ 0
+</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../concept/core.html" class="pagination-link" aria-label="Julia core">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Julia core</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

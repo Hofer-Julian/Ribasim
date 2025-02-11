@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Reservoir – Ribasim</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../tutorial/irrigation-demand.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-54ffc10b7d59450cb53583785f168d21.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="https://user-images.githubusercontent.com/4471859/224825908-bee7e044-bc6b-4561-8b08-5d330cce3ed5.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Ribasim</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Overview</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../tutorial/natural-flow.html" aria-current="page"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../guide/examples.html"> 
+<span class="menu-text">How-to guides</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../concept/concept.html"> 
+<span class="menu-text">Concepts</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../reference/index.html"> 
+<span class="menu-text">Reference</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../dev/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/Deltares/Ribasim"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tutorial/reservoir.html">Reservoir</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/natural-flow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Getting started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/irrigation-demand.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Irrigation demand</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/reservoir.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Reservoir</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#reservoir" id="toc-reservoir" class="nav-link active" data-scroll-target="#reservoir"><span class="header-section-number">1</span> Reservoir</a>
+  <ul class="collapse">
+  <li><a href="#add-a-basin" id="toc-add-a-basin" class="nav-link" data-scroll-target="#add-a-basin"><span class="header-section-number">1.1</span> Add a Basin</a></li>
+  <li><a href="#add-a-demand-node" id="toc-add-a-demand-node" class="nav-link" data-scroll-target="#add-a-demand-node"><span class="header-section-number">1.2</span> Add a demand node</a></li>
+  <li><a href="#adjust-the-code" id="toc-adjust-the-code" class="nav-link" data-scroll-target="#adjust-the-code"><span class="header-section-number">1.3</span> Adjust the code</a></li>
+  </ul></li>
+  <li><a href="#plot-reservoir-storage-and-level" id="toc-plot-reservoir-storage-and-level" class="nav-link" data-scroll-target="#plot-reservoir-storage-and-level"><span class="header-section-number">2</span> Plot reservoir storage and level</a></li>
+  <li><a href="#plot-flows" id="toc-plot-flows" class="nav-link" data-scroll-target="#plot-flows"><span class="header-section-number">3</span> Plot flows</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Reservoir</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="cell-1" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ribasim <span class="im">import</span> Model, Node</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ribasim.nodes <span class="im">import</span> (</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    basin,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    flow_boundary,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    tabulated_rating_curve,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    user_demand,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> shapely.geometry <span class="im">import</span> Point</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-2" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>base_dir <span class="op">=</span> Path(<span class="st">"crystal-basin"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>starttime <span class="op">=</span> <span class="st">"2022-01-01"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>endtime <span class="op">=</span> <span class="st">"2023-01-01"</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> Model(</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    starttime<span class="op">=</span>starttime,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    endtime<span class="op">=</span>endtime,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    crs<span class="op">=</span><span class="st">"EPSG:4326"</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>These nodes are identical to the previous tutorial:</p>
+<div id="cell-4" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># FlowBoundary</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"time"</span>: pd.date_range(start<span class="op">=</span><span class="st">"2022-01-01"</span>, end<span class="op">=</span><span class="st">"2023-01-01"</span>, freq<span class="op">=</span><span class="st">"MS"</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"main"</span>: [<span class="fl">74.7</span>, <span class="fl">57.9</span>, <span class="fl">63.2</span>, <span class="fl">183.9</span>, <span class="fl">91.8</span>, <span class="fl">47.5</span>, <span class="fl">32.6</span>, <span class="fl">27.6</span>, <span class="fl">26.5</span>, <span class="fl">25.1</span>, <span class="fl">39.3</span>, <span class="fl">37.8</span>, <span class="fl">57.9</span>],</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"minor"</span>: [<span class="fl">16.3</span>, <span class="fl">3.8</span>, <span class="fl">3.0</span>, <span class="fl">37.6</span>, <span class="fl">18.2</span>, <span class="fl">11.1</span>, <span class="fl">12.9</span>, <span class="fl">12.2</span>, <span class="fl">11.2</span>, <span class="fl">10.8</span>, <span class="fl">15.1</span>, <span class="fl">14.3</span>, <span class="fl">11.8</span>]</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>})  <span class="co"># fmt: skip</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>data[<span class="st">"total"</span>] <span class="op">=</span> data[<span class="st">"minor"</span>] <span class="op">+</span> data[<span class="st">"main"</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>main <span class="op">=</span> model.flow_boundary.add(</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    Node(<span class="dv">1</span>, Point(<span class="fl">0.0</span>, <span class="fl">0.0</span>), name<span class="op">=</span><span class="st">"main"</span>),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        flow_boundary.Time(</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            time<span class="op">=</span>data.time,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>            flow_rate<span class="op">=</span>data.main,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>minor <span class="op">=</span> model.flow_boundary.add(</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    Node(<span class="dv">2</span>, Point(<span class="op">-</span><span class="fl">3.0</span>, <span class="fl">0.0</span>), name<span class="op">=</span><span class="st">"minor"</span>),</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        flow_boundary.Time(</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>            time<span class="op">=</span>data.time,</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>            flow_rate<span class="op">=</span>data.minor,</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Basin</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>confluence <span class="op">=</span> model.basin.add(</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    Node(<span class="dv">3</span>, Point(<span class="op">-</span><span class="fl">1.5</span>, <span class="op">-</span><span class="dv">1</span>), name<span class="op">=</span><span class="st">"confluence"</span>),</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>        basin.Profile(area<span class="op">=</span>[<span class="dv">672000</span>, <span class="dv">5600000</span>], level<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">6</span>]),</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>        basin.State(level<span class="op">=</span>[<span class="dv">4</span>]),</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        basin.Time(time<span class="op">=</span>[starttime, endtime]),</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co"># TabulatedRatingCurve</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>weir <span class="op">=</span> model.tabulated_rating_curve.add(</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    Node(<span class="dv">4</span>, Point(<span class="op">-</span><span class="fl">1.5</span>, <span class="op">-</span><span class="fl">1.5</span>), name<span class="op">=</span><span class="st">"weir"</span>),</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>        tabulated_rating_curve.Static(</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>            level<span class="op">=</span>[<span class="fl">0.0</span>, <span class="dv">2</span>, <span class="dv">5</span>],</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>            flow_rate<span class="op">=</span>[<span class="fl">0.0</span>, <span class="dv">50</span>, <span class="dv">200</span>],</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>diversion_weir <span class="op">=</span> model.tabulated_rating_curve.add(</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    Node(<span class="dv">8</span>, Point(<span class="op">-</span><span class="fl">1.125</span>, <span class="op">-</span><span class="fl">0.75</span>), name<span class="op">=</span><span class="st">"diversion_weir"</span>),</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>        tabulated_rating_curve.Static(</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>            level<span class="op">=</span>[<span class="fl">0.0</span>, <span class="fl">1.5</span>, <span class="dv">5</span>],</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>            flow_rate<span class="op">=</span>[<span class="fl">0.0</span>, <span class="dv">45</span>, <span class="dv">200</span>],</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a><span class="co"># UserDemand</span></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>irrigation <span class="op">=</span> model.user_demand.add(</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>    Node(<span class="dv">7</span>, Point(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">0.5</span>), name<span class="op">=</span><span class="st">"irrigation"</span>),</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>        user_demand.Time(</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>            demand<span class="op">=</span>[<span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="dv">10</span>, <span class="dv">12</span>, <span class="dv">12</span>, <span class="fl">0.0</span>],</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>            return_factor<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>            min_level<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>            demand_priority<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>            time<span class="op">=</span>[</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>                starttime,</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>                <span class="st">"2022-03-31"</span>,</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>                <span class="st">"2022-04-01"</span>,</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>                <span class="st">"2022-07-01"</span>,</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>                <span class="st">"2022-09-30"</span>,</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>                <span class="st">"2022-10-01"</span>,</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>            ],</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="co"># Terminal</span></span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>sea <span class="op">=</span> model.terminal.add(Node(<span class="dv">5</span>, Point(<span class="op">-</span><span class="fl">1.5</span>, <span class="op">-</span><span class="fl">3.0</span>), name<span class="op">=</span><span class="st">"sea"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Due to the increase of population and climate change Crystal city has implemented a reservoir upstream to store water for domestic use (See <a href="#fig-reservoir" class="quarto-xref">Figure&nbsp;1</a>). The reservoir is to help ensure a reliable supply during dry periods. In this module, the user will update the model to incorporate the reservoir’s impact on the whole Crystal basin.</p>
+<div id="fig-reservoir" class="quarto-float quarto-figure quarto-figure-left anchored" data-fig-align="left">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-reservoir-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://s3.deltares.nl/ribasim/doc-image/quickstart/Crystal-basin-with-demands-and-a-reservoir.png" class="img-fluid quarto-figure quarto-figure-left figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-reservoir-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Crystal basin with demands and a reservoir
+</figcaption>
+</figure>
+</div>
+<section id="reservoir" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="reservoir"><span class="header-section-number">1</span> Reservoir</h2>
+<section id="add-a-basin" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="add-a-basin"><span class="header-section-number">1.1</span> Add a Basin</h3>
+<p>The <code>diversion_basin</code> from the previous tutorial is not used, but replaced by a larger <code>reservoir</code> Basin. Its water will play an important role for the users (the city and the irrigation district). The reservoir has a maximum area of <span class="math inline">\(32.3 \text{ km}^2\)</span> and a maximum depth of <span class="math inline">\(7 \text{ m}\)</span>.</p>
+<div id="cell-6" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>reservoir <span class="op">=</span> model.basin.add(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    Node(<span class="dv">6</span>, Point(<span class="op">-</span><span class="fl">0.75</span>, <span class="op">-</span><span class="fl">0.5</span>), name<span class="op">=</span><span class="st">"reservoir"</span>),</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        basin.Profile(area<span class="op">=</span>[<span class="dv">20000000</span>, <span class="dv">32300000</span>], level<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">7</span>]),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        basin.State(level<span class="op">=</span>[<span class="fl">3.5</span>]),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        basin.Time(time<span class="op">=</span>[starttime, endtime]),</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="add-a-demand-node" class="level3" data-number="1.2">
+<h3 data-number="1.2" class="anchored" data-anchor-id="add-a-demand-node"><span class="header-section-number">1.2</span> Add a demand node</h3>
+<p><span class="math inline">\(50.000\)</span> people live in Crystal City. To represents the total flow rate or abstraction rate required to meet the water demand of <span class="math inline">\(50.000\)</span> people, another demand node needs to be added assuming a return flow of <span class="math inline">\(60%\)</span>.</p>
+<div id="cell-8" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>city <span class="op">=</span> model.user_demand.add(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    Node(<span class="dv">9</span>, Point(<span class="dv">0</span>, <span class="op">-</span><span class="dv">1</span>), name<span class="op">=</span><span class="st">"city"</span>),</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        user_demand.Time(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Total demand in m³/s</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            demand<span class="op">=</span>[<span class="fl">0.07</span>, <span class="fl">0.08</span>, <span class="fl">0.09</span>, <span class="fl">0.10</span>, <span class="fl">0.12</span>, <span class="fl">0.14</span>, <span class="fl">0.15</span>, <span class="fl">0.14</span>, <span class="fl">0.12</span>, <span class="fl">0.10</span>, <span class="fl">0.09</span>, <span class="fl">0.08</span>],</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            return_factor<span class="op">=</span><span class="fl">0.6</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            min_level<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            demand_priority<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            time<span class="op">=</span>pd.date_range(start<span class="op">=</span><span class="st">"2022-01-01"</span>, periods<span class="op">=</span><span class="dv">12</span>, freq<span class="op">=</span><span class="st">"MS"</span>),</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>)  <span class="co"># fmt: skip</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-9" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>model.link.add(main, reservoir, name<span class="op">=</span><span class="st">"main"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>model.link.add(minor, confluence, name<span class="op">=</span><span class="st">"minor"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>model.link.add(reservoir, irrigation, name<span class="op">=</span><span class="st">"irrigation"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>model.link.add(irrigation, confluence)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>model.link.add(reservoir, city, name<span class="op">=</span><span class="st">"city"</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>model.link.add(city, confluence, name<span class="op">=</span><span class="st">"city returnflow"</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>model.link.add(reservoir, diversion_weir, name<span class="op">=</span><span class="st">"not diverted"</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>model.link.add(diversion_weir, confluence)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>model.link.add(confluence, weir)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>model.link.add(weir, sea, name<span class="op">=</span><span class="st">"sea"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-10" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>model.plot()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="reservoir_files/figure-html/cell-8-output-1.png" width="537" height="389" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-11" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>toml_path <span class="op">=</span> base_dir <span class="op">/</span> <span class="st">"Crystal-3/ribasim.toml"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>model.write(toml_path)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>cli_path <span class="op">=</span> <span class="st">"ribasim"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="adjust-the-code" class="level3" data-number="1.3">
+<h3 data-number="1.3" class="anchored" data-anchor-id="adjust-the-code"><span class="header-section-number">1.3</span> Adjust the code</h3>
+<p>Adjust the naming of the Basin in the dictionary mapping and the saving file should be <code>Crystal-3</code>.</p>
+</section>
+</section>
+<section id="plot-reservoir-storage-and-level" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="plot-reservoir-storage-and-level"><span class="header-section-number">2</span> Plot reservoir storage and level</h2>
+<div id="cell-15" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_basin <span class="op">=</span> pd.read_feather(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    base_dir <span class="op">/</span> <span class="st">"Crystal-3/results/basin.arrow"</span>, dtype_backend<span class="op">=</span><span class="st">"pyarrow"</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create pivot tables and plot for Basin data</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>df_basin_wide <span class="op">=</span> df_basin.pivot_table(</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span><span class="st">"time"</span>, columns<span class="op">=</span><span class="st">"node_id"</span>, values<span class="op">=</span>[<span class="st">"storage"</span>, <span class="st">"level"</span>]</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>df_basin_wide <span class="op">=</span> df_basin_wide.loc[:, pd.IndexSlice[:, reservoir.node_id]]</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot level and storage on the same graph with dual y-axes</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>fig, ax1 <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot level on the primary y-axis</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>color <span class="op">=</span> <span class="st">"b"</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">"Time"</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">"Level [m]"</span>, color<span class="op">=</span>color)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>ax1.plot(df_basin_wide.index, df_basin_wide[<span class="st">"level"</span>], color<span class="op">=</span>color)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>ax1.tick_params(axis<span class="op">=</span><span class="st">"y"</span>, labelcolor<span class="op">=</span>color)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a secondary y-axis for storage</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>ax2 <span class="op">=</span> ax1.twinx()</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>color <span class="op">=</span> <span class="st">"r"</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">"Storage [m³]"</span>, color<span class="op">=</span><span class="st">"r"</span>)</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>ax2.plot(df_basin_wide.index, df_basin_wide[<span class="st">"storage"</span>], linestyle<span class="op">=</span><span class="st">"--"</span>, color<span class="op">=</span>color)</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>ax2.tick_params(axis<span class="op">=</span><span class="st">"y"</span>, labelcolor<span class="op">=</span>color)</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()  <span class="co"># Adjust layout to fit labels</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Basin level and storage"</span>)</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="reservoir_files/figure-html/cell-11-output-1.png" width="1140" height="569" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The figure above illustrates the storage and water level at the reservoir. As expected, after increasing the profile of the Basin, its storage capacity increased as well.</p>
+</section>
+<section id="plot-flows" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="plot-flows"><span class="header-section-number">3</span> Plot flows</h2>
+<div id="cell-17" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df_flow <span class="op">=</span> pd.read_feather(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    base_dir <span class="op">/</span> <span class="st">"Crystal-3/results/flow.arrow"</span>, dtype_backend<span class="op">=</span><span class="st">"pyarrow"</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the link names and then remove unnamed links</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>df_flow[<span class="st">"name"</span>] <span class="op">=</span> model.link.df[<span class="st">"name"</span>].loc[df_flow[<span class="st">"link_id"</span>]].to_numpy()</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>df_flow <span class="op">=</span> df_flow[df_flow[<span class="st">"name"</span>].astype(<span class="bu">bool</span>)]</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the flow data, interactive plot with Plotly</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>pivot_flow <span class="op">=</span> df_flow.pivot_table(</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span><span class="st">"time"</span>, columns<span class="op">=</span><span class="st">"name"</span>, values<span class="op">=</span><span class="st">"flow_rate"</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>).reset_index()</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> px.line(pivot_flow, x<span class="op">=</span><span class="st">"time"</span>, y<span class="op">=</span>pivot_flow.columns[<span class="dv">1</span>:], title<span class="op">=</span><span class="st">"Flow [m3/s]"</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>fig.update_layout(legend_title_text<span class="op">=</span><span class="st">"Link"</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>                            <div id="c2ef7569-f662-42a6-874e-2887655ac754" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("c2ef7569-f662-42a6-874e-2887655ac754")) {                    Plotly.newPlot(                        "c2ef7569-f662-42a6-874e-2887655ac754",                        [{"hovertemplate":"variable=city\u003cbr\u003etime=%{x}\u003cbr\u003evalue=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"city","line":{"color":"#636efa","dash":"solid"},"marker":{"symbol":"circle"},"mode":"lines","name":"city","showlegend":true,"x":["2022-01-01T00:00:00","2022-01-02T00:00:00","2022-01-03T00:00:00","2022-01-04T00:00:00","2022-01-05T00:00:00","2022-01-06T00:00:00","2022-01-07T00:00:00","2022-01-08T00:00:00","2022-01-09T00:00:00","2022-01-10T00:00:00","2022-01-11T00:00:00","2022-01-12T00:00:00","2022-01-13T00:00:00","2022-01-14T00:00:00","2022-01-15T00:00:00","2022-01-16T00:00:00","2022-01-17T00:00:00","2022-01-18T00:00:00","2022-01-19T00:00:00","2022-01-20T00:00:00","2022-01-21T00:00:00","2022-01-22T00:00:00","2022-01-23T00:00:00","2022-01-24T00:00:00","2022-01-25T00:00:00","2022-01-26T00:00:00","2022-01-27T00:00:00","2022-01-28T00:00:00","2022-01-29T00:00:00","2022-01-30T00:00:00","2022-01-31T00:00:00","2022-02-01T00:00:00","2022-02-02T00:00:00","2022-02-03T00:00:00","2022-02-04T00:00:00","2022-02-05T00:00:00","2022-02-06T00:00:00","2022-02-07T00:00:00","2022-02-08T00:00:00","2022-02-09T00:00:00","2022-02-10T00:00:00","2022-02-11T00:00:00","2022-02-12T00:00:00","2022-02-13T00:00:00","2022-02-14T00:00:00","2022-02-15T00:00:00","2022-02-16T00:00:00","2022-02-17T00:00:00","2022-02-18T00:00:00","2022-02-19T00:00:00","2022-02-20T00:00:00","2022-02-21T00:00:00","2022-02-22T00:00:00","2022-02-23T00:00:00","2022-02-24T00:00:00","2022-02-25T00:00:00","2022-02-26T00:00:00","2022-02-27T00:00:00","2022-02-28T00:00:00","2022-03-01T00:00:00","2022-03-02T00:00:00","2022-03-03T00:00:00","2022-03-04T00:00:00","2022-03-05T00:00:00","2022-03-06T00:00:00","2022-03-07T00:00:00","2022-03-08T00:00:00","2022-03-09T00:00:00","2022-03-10T00:00:00","2022-03-11T00:00:00","2022-03-12T00:00:00","2022-03-13T00:00:00","2022-03-14T00:00:00","2022-03-15T00:00:00","2022-03-16T00:00:00","2022-03-17T00:00:00","2022-03-18T00:00:00","2022-03-19T00:00:00","2022-03-20T00:00:00","2022-03-21T00:00:00","2022-03-22T00:00:00","2022-03-23T00:00:00","2022-03-24T00:00:00","2022-03-25T00:00:00","2022-03-26T00:00:00","2022-03-27T00:00:00","2022-03-28T00:00:00","2022-03-29T00:00:00","2022-03-30T00:00:00","2022-03-31T00:00:00","2022-04-01T00:00:00","2022-04-02T00:00:00","2022-04-03T00:00:00","2022-04-04T00:00:00","2022-04-05T00:00:00","2022-04-06T00:00:00","2022-04-07T00:00:00","2022-04-08T00:00:00","2022-04-09T00:00:00","2022-04-10T00:00:00","2022-04-11T00:00:00","2022-04-12T00:00:00","2022-04-13T00:00:00","2022-04-14T00:00:00","2022-04-15T00:00:00","2022-04-16T00:00:00","2022-04-17T00:00:00","2022-04-18T00:00:00","2022-04-19T00:00:00","2022-04-20T00:00:00","2022-04-21T00:00:00","2022-04-22T00:00:00","2022-04-23T00:00:00","2022-04-24T00:00:00","2022-04-25T00:00:00","2022-04-26T00:00:00","2022-04-27T00:00:00","2022-04-28T00:00:00","2022-04-29T00:00:00","2022-04-30T00:00:00","2022-05-01T00:00:00","2022-05-02T00:00:00","2022-05-03T00:00:00","2022-05-04T00:00:00","2022-05-05T00:00:00","2022-05-06T00:00:00","2022-05-07T00:00:00","2022-05-08T00:00:00","2022-05-09T00:00:00","2022-05-10T00:00:00","2022-05-11T00:00:00","2022-05-12T00:00:00","2022-05-13T00:00:00","2022-05-14T00:00:00","2022-05-15T00:00:00","2022-05-16T00:00:00","2022-05-17T00:00:00","2022-05-18T00:00:00","2022-05-19T00:00:00","2022-05-20T00:00:00","2022-05-21T00:00:00","2022-05-22T00:00:00","2022-05-23T00:00:00","2022-05-24T00:00:00","2022-05-25T00:00:00","2022-05-26T00:00:00","2022-05-27T00:00:00","2022-05-28T00:00:00","2022-05-29T00:00:00","2022-05-30T00:00:00","2022-05-31T00:00:00","2022-06-01T00:00:00","2022-06-02T00:00:00","2022-06-03T00:00:00","2022-06-04T00:00:00","2022-06-05T00:00:00","2022-06-06T00:00:00","2022-06-07T00:00:00","2022-06-08T00:00:00","2022-06-09T00:00:00","2022-06-10T00:00:00","2022-06-11T00:00:00","2022-06-12T00:00:00","2022-06-13T00:00:00","2022-06-14T00:00:00","2022-06-15T00:00:00","2022-06-16T00:00:00","2022-06-17T00:00:00","2022-06-18T00:00:00","2022-06-19T00:00:00","2022-06-20T00:00:00","2022-06-21T00:00:00","2022-06-22T00:00:00","2022-06-23T00:00:00","2022-06-24T00:00:00","2022-06-25T00:00:00","2022-06-26T00:00:00","2022-06-27T00:00:00","2022-06-28T00:00:00","2022-06-29T00:00:00","2022-06-30T00:00:00","2022-07-01T00:00:00","2022-07-02T00:00:00","2022-07-03T00:00:00","2022-07-04T00:00:00","2022-07-05T00:00:00","2022-07-06T00:00:00","2022-07-07T00:00:00","2022-07-08T00:00:00","2022-07-09T00:00:00","2022-07-10T00:00:00","2022-07-11T00:00:00","2022-07-12T00:00:00","2022-07-13T00:00:00","2022-07-14T00:00:00","2022-07-15T00:00:00","2022-07-16T00:00:00","2022-07-17T00:00:00","2022-07-18T00:00:00","2022-07-19T00:00:00","2022-07-20T00:00:00","2022-07-21T00:00:00","2022-07-22T00:00:00","2022-07-23T00:00:00","2022-07-24T00:00:00","2022-07-25T00:00:00","2022-07-26T00:00:00","2022-07-27T00:00:00","2022-07-28T00:00:00","2022-07-29T00:00:00","2022-07-30T00:00:00","2022-07-31T00:00:00","2022-08-01T00:00:00","2022-08-02T00:00:00","2022-08-03T00:00:00","2022-08-04T00:00:00","2022-08-05T00:00:00","2022-08-06T00:00:00","2022-08-07T00:00:00","2022-08-08T00:00:00","2022-08-09T00:00:00","2022-08-10T00:00:00","2022-08-11T00:00:00","2022-08-12T00:00:00","2022-08-13T00:00:00","2022-08-14T00:00:00","2022-08-15T00:00:00","2022-08-16T00:00:00","2022-08-17T00:00:00","2022-08-18T00:00:00","2022-08-19T00:00:00","2022-08-20T00:00:00","2022-08-21T00:00:00","2022-08-22T00:00:00","2022-08-23T00:00:00","2022-08-24T00:00:00","2022-08-25T00:00:00","2022-08-26T00:00:00","2022-08-27T00:00:00","2022-08-28T00:00:00","2022-08-29T00:00:00","2022-08-30T00:00:00","2022-08-31T00:00:00","2022-09-01T00:00:00","2022-09-02T00:00:00","2022-09-03T00:00:00","2022-09-04T00:00:00","2022-09-05T00:00:00","2022-09-06T00:00:00","2022-09-07T00:00:00","2022-09-08T00:00:00","2022-09-09T00:00:00","2022-09-10T00:00:00","2022-09-11T00:00:00","2022-09-12T00:00:00","2022-09-13T00:00:00","2022-09-14T00:00:00","2022-09-15T00:00:00","2022-09-16T00:00:00","2022-09-17T00:00:00","2022-09-18T00:00:00","2022-09-19T00:00:00","2022-09-20T00:00:00","2022-09-21T00:00:00","2022-09-22T00:00:00","2022-09-23T00:00:00","2022-09-24T00:00:00","2022-09-25T00:00:00","2022-09-26T00:00:00","2022-09-27T00:00:00","2022-09-28T00:00:00","2022-09-29T00:00:00","2022-09-30T00:00:00","2022-10-01T00:00:00","2022-10-02T00:00:00","2022-10-03T00:00:00","2022-10-04T00:00:00","2022-10-05T00:00:00","2022-10-06T00:00:00","2022-10-07T00:00:00","2022-10-08T00:00:00","2022-10-09T00:00:00","2022-10-10T00:00:00","2022-10-11T00:00:00","2022-10-12T00:00:00","2022-10-13T00:00:00","2022-10-14T00:00:00","2022-10-15T00:00:00","2022-10-16T00:00:00","2022-10-17T00:00:00","2022-10-18T00:00:00","2022-10-19T00:00:00","2022-10-20T00:00:00","2022-10-21T00:00:00","2022-10-22T00:00:00","2022-10-23T00:00:00","2022-10-24T00:00:00","2022-10-25T00:00:00","2022-10-26T00:00:00","2022-10-27T00:00:00","2022-10-28T00:00:00","2022-10-29T00:00:00","2022-10-30T00:00:00","2022-10-31T00:00:00","2022-11-01T00:00:00","2022-11-02T00:00:00","2022-11-03T00:00:00","2022-11-04T00:00:00","2022-11-05T00:00:00","2022-11-06T00:00:00","2022-11-07T00:00:00","2022-11-08T00:00:00","2022-11-09T00:00:00","2022-11-10T00:00:00","2022-11-11T00:00:00","2022-11-12T00:00:00","2022-11-13T00:00:00","2022-11-14T00:00:00","2022-11-15T00:00:00","2022-11-16T00:00:00","2022-11-17T00:00:00","2022-11-18T00:00:00","2022-11-19T00:00:00","2022-11-20T00:00:00","2022-11-21T00:00:00","2022-11-22T00:00:00","2022-11-23T00:00:00","2022-11-24T00:00:00","2022-11-25T00:00:00","2022-11-26T00:00:00","2022-11-27T00:00:00","2022-11-28T00:00:00","2022-11-29T00:00:00","2022-11-30T00:00:00","2022-12-01T00:00:00","2022-12-02T00:00:00","2022-12-03T00:00:00","2022-12-04T00:00:00","2022-12-05T00:00:00","2022-12-06T00:00:00","2022-12-07T00:00:00","2022-12-08T00:00:00","2022-12-09T00:00:00","2022-12-10T00:00:00","2022-12-11T00:00:00","2022-12-12T00:00:00","2022-12-13T00:00:00","2022-12-14T00:00:00","2022-12-15T00:00:00","2022-12-16T00:00:00","2022-12-17T00:00:00","2022-12-18T00:00:00","2022-12-19T00:00:00","2022-12-20T00:00:00","2022-12-21T00:00:00","2022-12-22T00:00:00","2022-12-23T00:00:00","2022-12-24T00:00:00","2022-12-25T00:00:00","2022-12-26T00:00:00","2022-12-27T00:00:00","2022-12-28T00:00:00","2022-12-29T00:00:00","2022-12-30T00:00:00","2022-12-31T00:00:00"],"xaxis":"x","y":[0.07016129032255816,0.07048387526331622,0.07080645161020258,0.07112903225778176,0.07145161290397832,0.07177419354829453,0.07209677419355986,0.07241935483812557,0.07274193548313027,0.07306451612904664,0.07338709677417195,0.0737096774193641,0.07403225806451448,0.07435483870995574,0.07467741935474839,0.07500000000009112,0.07532258064515056,0.07564516129032586,0.07596774193548181,0.07629032258064618,0.07661290322580734,0.076935483870968,0.077258064516129,0.07758064516129,0.07790322580645133,0.07822580645161233,0.07854838709677366,0.07887096774193769,0.07919354838709532,0.07951612903225834,0.07983870967742068,0.08017845252029508,0.0805357117522322,0.08089285735056802,0.08124999986677822,0.08160714286353209,0.08196428570057496,0.08232142857171244,0.08267857142941903,0.08303571428548788,0.08339285714285763,0.0837499999999946,0.08410714285711206,0.08446428571425915,0.08482142857141838,0.0851785714285722,0.0855357142857193,0.08589285714285964,0.08625000000000135,0.08660714285714373,0.08696428571428542,0.08732142857142848,0.08767857142857152,0.08803571428571458,0.08839285714285695,0.08874999999999933,0.08910714285714305,0.08946428571428543,0.08982142857142915,0.09016139393973828,0.09048386018228889,0.09080645516350598,0.09112903209649124,0.09145161289103204,0.0917741935527428,0.09209677419396502,0.09241935483852003,0.09274193548387538,0.09306451612890466,0.09338709677422768,0.09370967741932099,0.09403225806453419,0.09435483870968676,0.09467741935483799,0.09500000000000135,0.09532258064515729,0.09564516129032402,0.09596774193549074,0.09629032258064937,0.09661290322581206,0.09693548387096126,0.09725806451612394,0.09758064516129336,0.09790322580645335,0.09822580645161334,0.09854838709677467,0.09887096774193466,0.09919354838709195,0.09951612903224116,0.09983898577588628,0.10033338170957534,0.10099999999151031,0.10166666665663528,0.10233333333425333,0.10300000000001429,0.10366666666667933,0.10433333333332821,0.10499999999999461,0.10566666666666774,0.10633333333333549,0.10700000000000189,0.1076666666666602,0.10833333333333064,0.10899999999999839,0.10966666666666343,0.11033333333334061,0.11100000000000566,0.11166666666666263,0.11233333333333441,0.11300000000000754,0.11366666666667125,0.11433333333333495,0.115,0.1156666666666664,0.11633333333333414,0.11699999999999919,0.11766666666666424,0.1183333333333266,0.11899999999998895,0.11966666666665535,0.12032282814842836,0.12096776034471043,0.12161290660446765,0.12225806454952733,0.12290322562884048,0.12354838710986871,0.12419354837005409,0.12483870966663677,0.1254838709698527,0.12612903225803435,0.12677419354838126,0.12741935483870395,0.12806451612903738,0.12870967741935196,0.12935483870967734,0.13,0.13064516129032266,0.13129032258064532,0.13193548387096532,0.13258064516129067,0.13322580645161333,0.1338709677419333,0.134516129032256,0.13516129032258134,0.1358064516129067,0.13645161290322938,0.13709677419354935,0.137741935483872,0.13838709677419467,0.13903225806451736,0.13967741935483732,0.14017198498670985,0.14049896643679757,0.1408333947638123,0.14116667567928,0.1414999858738291,0.14183333015142394,0.1421666941129957,0.1425000008377861,0.14283333328712616,0.14316666666775643,0.14350000000329735,0.14383333333969253,0.14416666666951508,0.1445000000007928,0.1448333333334449,0.14516666666664402,0.14549999999998328,0.14583333333332793,0.1461666666666672,0.14650000000000377,0.14683333333333765,0.14716666666666883,0.14750000000000538,0.14783333333333387,0.14816666666666775,0.14850000000000163,0.14883333333333817,0.14916666666666936,0.14950000000000324,0.1498333333333344,0.1498380037849549,0.14951621202637735,0.14919354802002663,0.14887097039124153,0.14854838801196482,0.1482258061402778,0.14790322539131145,0.1475806450154131,0.14725806453785345,0.1469354839149121,0.14661290324197143,0.14629032257808258,0.14596774193033019,0.14564516128836086,0.1453225806454079,0.14500000000058746,0.14467741935506906,0.1443548387096881,0.1440322580644958,0.14370967741935198,0.14338709677419736,0.1430645161290374,0.1427419354838747,0.14241935483870932,0.14209677419354394,0.14177419354838397,0.14145161290322397,0.141129032258064,0.140806451612904,0.14048387096774131,0.14016129032257865,0.13968366505800212,0.13903192673862913,0.13838713963962046,0.13774193739552748,0.13709677203305612,0.1364516071362919,0.13580644943763792,0.13516129138263447,0.13451613025308082,0.13387096820643854,0.13322580632522457,0.13258064507212516,0.1319354837178576,0.13129032254579082,0.13064516124511202,0.13000000000921083,0.12935483870139083,0.12870967743016082,0.12806451612604347,0.1274193548438025,0.12677419354605027,0.1261290322601282,0.12548387096624034,0.1248387096783834,0.12419354838630642,0.12354838709628287,0.12290322580628628,0.12225806451610104,0.12161290322580802,0.12096774193548804,0.12032258064516269,0.11966655729576747,0.11900176912914806,0.1183340155157903,0.11766683084497884,0.11699978870488445,0.11633321126794154,0.11566662676348911,0.11499999225494792,0.11433334112258442,0.11366667296615628,0.11300000548989542,0.11233333544833672,0.1116666678309654,0.11099999990994952,0.11033333333418813,0.10966666667609523,0.10900000000463074,0.10833333333470768,0.10766666666689195,0.10699999999964213,0.10633333333313068,0.10566666666660846,0.10499999999998923,0.10433333333333765,0.10366666666667529,0.10299999999999676,0.10233333333333441,0.10166666666666667,0.10100000000000971,0.10033333333334735,0.09983547165229403,0.09951626703566203,0.09919359539881245,0.09887095433278807,0.09854838842610156,0.09822580676653025,0.0979032256260096,0.09758064503275952,0.09725806435211173,0.09693548383025229,0.09661290318325713,0.09629032259029272,0.09596774194456413,0.09564516129068647,0.09532258064444048,0.09499999999960117,0.09467741935443849,0.09435483870944827,0.09403225806445806,0.09370967741936545,0.09338709677421354,0.09306451612905625,0.09274193548388279,0.09241935483871472,0.09209677419355204,0.09177419354838935,0.09145161290321589,0.0911290322580586,0.09080645161289592,0.09048387096774942,0.09016129032259212,0.08983329056752996,0.08950086828385893,0.08916677596673253,0.08883329098285887,0.08849999916435788,0.08816666915561115,0.08783333272707683,0.08750000136826808,0.08716666646795433,0.08683333333443713,0.08649999997508497,0.0861666666710732,0.08583333333886306,0.08550000000106929,0.0851666666656739,0.08483333333172292,0.08449999999925407,0.0841666666665481,0.08383333333357264,0.08350000000017678,0.0831666666667432,0.08283333333334734,0.0825,0.08216666666665805,0.08183333333332686,0.08150000000000107,0.08116666666668068,0.08083333333333872,0.08049999999999677,0.08016666666665481,0.07999431718513261,0.0800005380382397,0.08000035314790525,0.08000001107103782,0.08000002655083706,0.08000003539465575,0.08000001856987149,0.0800000031533677,0.07999999567798956,0.07999999602500961,0.07999999847422092,0.0800000004196449,0.08000000084264751,0.08000000053367262,0.08000000008572695,0.07999999988413442,0.0799999999120687,0.07999999998065134,0.08000000001022407,0.08000000000931862,0.08000000000208038,0.07999999999878195,0.07999999999889514,0.07999999999973591,0.08000000000013474,0.08000000000012936,0.08000000000002695,0.07999999999998383,0.07999999999997305,0.07999999999998383,0.07999999999999462],"yaxis":"y","type":"scattergl"},{"hovertemplate":"variable=city returnflow\u003cbr\u003etime=%{x}\u003cbr\u003evalue=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"city returnflow","line":{"color":"#EF553B","dash":"solid"},"marker":{"symbol":"circle"},"mode":"lines","name":"city returnflow","showlegend":true,"x":["2022-01-01T00:00:00","2022-01-02T00:00:00","2022-01-03T00:00:00","2022-01-04T00:00:00","2022-01-05T00:00:00","2022-01-06T00:00:00","2022-01-07T00:00:00","2022-01-08T00:00:00","2022-01-09T00:00:00","2022-01-10T00:00:00","2022-01-11T00:00:00","2022-01-12T00:00:00","2022-01-13T00:00:00","2022-01-14T00:00:00","2022-01-15T00:00:00","2022-01-16T00:00:00","2022-01-17T00:00:00","2022-01-18T00:00:00","2022-01-19T00:00:00","2022-01-20T00:00:00","2022-01-21T00:00:00","2022-01-22T00:00:00","2022-01-23T00:00:00","2022-01-24T00:00:00","2022-01-25T00:00:00","2022-01-26T00:00:00","2022-01-27T00:00:00","2022-01-28T00:00:00","2022-01-29T00:00:00","2022-01-30T00:00:00","2022-01-31T00:00:00","2022-02-01T00:00:00","2022-02-02T00:00:00","2022-02-03T00:00:00","2022-02-04T00:00:00","2022-02-05T00:00:00","2022-02-06T00:00:00","2022-02-07T00:00:00","2022-02-08T00:00:00","2022-02-09T00:00:00","2022-02-10T00:00:00","2022-02-11T00:00:00","2022-02-12T00:00:00","2022-02-13T00:00:00","2022-02-14T00:00:00","2022-02-15T00:00:00","2022-02-16T00:00:00","2022-02-17T00:00:00","2022-02-18T00:00:00","2022-02-19T00:00:00","2022-02-20T00:00:00","2022-02-21T00:00:00","2022-02-22T00:00:00","2022-02-23T00:00:00","2022-02-24T00:00:00","2022-02-25T00:00:00","2022-02-26T00:00:00","2022-02-27T00:00:00","2022-02-28T00:00:00","2022-03-01T00:00:00","2022-03-02T00:00:00","2022-03-03T00:00:00","2022-03-04T00:00:00","2022-03-05T00:00:00","2022-03-06T00:00:00","2022-03-07T00:00:00","2022-03-08T00:00:00","2022-03-09T00:00:00","2022-03-10T00:00:00","2022-03-11T00:00:00","2022-03-12T00:00:00","2022-03-13T00:00:00","2022-03-14T00:00:00","2022-03-15T00:00:00","2022-03-16T00:00:00","2022-03-17T00:00:00","2022-03-18T00:00:00","2022-03-19T00:00:00","2022-03-20T00:00:00","2022-03-21T00:00:00","2022-03-22T00:00:00","2022-03-23T00:00:00","2022-03-24T00:00:00","2022-03-25T00:00:00","2022-03-26T00:00:00","2022-03-27T00:00:00","2022-03-28T00:00:00","2022-03-29T00:00:00","2022-03-30T00:00:00","2022-03-31T00:00:00","2022-04-01T00:00:00","2022-04-02T00:00:00","2022-04-03T00:00:00","2022-04-04T00:00:00","2022-04-05T00:00:00","2022-04-06T00:00:00","2022-04-07T00:00:00","2022-04-08T00:00:00","2022-04-09T00:00:00","2022-04-10T00:00:00","2022-04-11T00:00:00","2022-04-12T00:00:00","2022-04-13T00:00:00","2022-04-14T00:00:00","2022-04-15T00:00:00","2022-04-16T00:00:00","2022-04-17T00:00:00","2022-04-18T00:00:00","2022-04-19T00:00:00","2022-04-20T00:00:00","2022-04-21T00:00:00","2022-04-22T00:00:00","2022-04-23T00:00:00","2022-04-24T00:00:00","2022-04-25T00:00:00","2022-04-26T00:00:00","2022-04-27T00:00:00","2022-04-28T00:00:00","2022-04-29T00:00:00","2022-04-30T00:00:00","2022-05-01T00:00:00","2022-05-02T00:00:00","2022-05-03T00:00:00","2022-05-04T00:00:00","2022-05-05T00:00:00","2022-05-06T00:00:00","2022-05-07T00:00:00","2022-05-08T00:00:00","2022-05-09T00:00:00","2022-05-10T00:00:00","2022-05-11T00:00:00","2022-05-12T00:00:00","2022-05-13T00:00:00","2022-05-14T00:00:00","2022-05-15T00:00:00","2022-05-16T00:00:00","2022-05-17T00:00:00","2022-05-18T00:00:00","2022-05-19T00:00:00","2022-05-20T00:00:00","2022-05-21T00:00:00","2022-05-22T00:00:00","2022-05-23T00:00:00","2022-05-24T00:00:00","2022-05-25T00:00:00","2022-05-26T00:00:00","2022-05-27T00:00:00","2022-05-28T00:00:00","2022-05-29T00:00:00","2022-05-30T00:00:00","2022-05-31T00:00:00","2022-06-01T00:00:00","2022-06-02T00:00:00","2022-06-03T00:00:00","2022-06-04T00:00:00","2022-06-05T00:00:00","2022-06-06T00:00:00","2022-06-07T00:00:00","2022-06-08T00:00:00","2022-06-09T00:00:00","2022-06-10T00:00:00","2022-06-11T00:00:00","2022-06-12T00:00:00","2022-06-13T00:00:00","2022-06-14T00:00:00","2022-06-15T00:00:00","2022-06-16T00:00:00","2022-06-17T00:00:00","2022-06-18T00:00:00","2022-06-19T00:00:00","2022-06-20T00:00:00","2022-06-21T00:00:00","2022-06-22T00:00:00","2022-06-23T00:00:00","2022-06-24T00:00:00","2022-06-25T00:00:00","2022-06-26T00:00:00","2022-06-27T00:00:00","2022-06-28T00:00:00","2022-06-29T00:00:00","2022-06-30T00:00:00","2022-07-01T00:00:00","2022-07-02T00:00:00","2022-07-03T00:00:00","2022-07-04T00:00:00","2022-07-05T00:00:00","2022-07-06T00:00:00","2022-07-07T00:00:00","2022-07-08T00:00:00","2022-07-09T00:00:00","2022-07-10T00:00:00","2022-07-11T00:00:00","2022-07-12T00:00:00","2022-07-13T00:00:00","2022-07-14T00:00:00","2022-07-15T00:00:00","2022-07-16T00:00:00","2022-07-17T00:00:00","2022-07-18T00:00:00","2022-07-19T00:00:00","2022-07-20T00:00:00","2022-07-21T00:00:00","2022-07-22T00:00:00","2022-07-23T00:00:00","2022-07-24T00:00:00","2022-07-25T00:00:00","2022-07-26T00:00:00","2022-07-27T00:00:00","2022-07-28T00:00:00","2022-07-29T00:00:00","2022-07-30T00:00:00","2022-07-31T00:00:00","2022-08-01T00:00:00","2022-08-02T00:00:00","2022-08-03T00:00:00","2022-08-04T00:00:00","2022-08-05T00:00:00","2022-08-06T00:00:00","2022-08-07T00:00:00","2022-08-08T00:00:00","2022-08-09T00:00:00","2022-08-10T00:00:00","2022-08-11T00:00:00","2022-08-12T00:00:00","2022-08-13T00:00:00","2022-08-14T00:00:00","2022-08-15T00:00:00","2022-08-16T00:00:00","2022-08-17T00:00:00","2022-08-18T00:00:00","2022-08-19T00:00:00","2022-08-20T00:00:00","2022-08-21T00:00:00","2022-08-22T00:00:00","2022-08-23T00:00:00","2022-08-24T00:00:00","2022-08-25T00:00:00","2022-08-26T00:00:00","2022-08-27T00:00:00","2022-08-28T00:00:00","2022-08-29T00:00:00","2022-08-30T00:00:00","2022-08-31T00:00:00","2022-09-01T00:00:00","2022-09-02T00:00:00","2022-09-03T00:00:00","2022-09-04T00:00:00","2022-09-05T00:00:00","2022-09-06T00:00:00","2022-09-07T00:00:00","2022-09-08T00:00:00","2022-09-09T00:00:00","2022-09-10T00:00:00","2022-09-11T00:00:00","2022-09-12T00:00:00","2022-09-13T00:00:00","2022-09-14T00:00:00","2022-09-15T00:00:00","2022-09-16T00:00:00","2022-09-17T00:00:00","2022-09-18T00:00:00","2022-09-19T00:00:00","2022-09-20T00:00:00","2022-09-21T00:00:00","2022-09-22T00:00:00","2022-09-23T00:00:00","2022-09-24T00:00:00","2022-09-25T00:00:00","2022-09-26T00:00:00","2022-09-27T00:00:00","2022-09-28T00:00:00","2022-09-29T00:00:00","2022-09-30T00:00:00","2022-10-01T00:00:00","2022-10-02T00:00:00","2022-10-03T00:00:00","2022-10-04T00:00:00","2022-10-05T00:00:00","2022-10-06T00:00:00","2022-10-07T00:00:00","2022-10-08T00:00:00","2022-10-09T00:00:00","2022-10-10T00:00:00","2022-10-11T00:00:00","2022-10-12T00:00:00","2022-10-13T00:00:00","2022-10-14T00:00:00","2022-10-15T00:00:00","2022-10-16T00:00:00","2022-10-17T00:00:00","2022-10-18T00:00:00","2022-10-19T00:00:00","2022-10-20T00:00:00","2022-10-21T00:00:00","2022-10-22T00:00:00","2022-10-23T00:00:00","2022-10-24T00:00:00","2022-10-25T00:00:00","2022-10-26T00:00:00","2022-10-27T00:00:00","2022-10-28T00:00:00","2022-10-29T00:00:00","2022-10-30T00:00:00","2022-10-31T00:00:00","2022-11-01T00:00:00","2022-11-02T00:00:00","2022-11-03T00:00:00","2022-11-04T00:00:00","2022-11-05T00:00:00","2022-11-06T00:00:00","2022-11-07T00:00:00","2022-11-08T00:00:00","2022-11-09T00:00:00","2022-11-10T00:00:00","2022-11-11T00:00:00","2022-11-12T00:00:00","2022-11-13T00:00:00","2022-11-14T00:00:00","2022-11-15T00:00:00","2022-11-16T00:00:00","2022-11-17T00:00:00","2022-11-18T00:00:00","2022-11-19T00:00:00","2022-11-20T00:00:00","2022-11-21T00:00:00","2022-11-22T00:00:00","2022-11-23T00:00:00","2022-11-24T00:00:00","2022-11-25T00:00:00","2022-11-26T00:00:00","2022-11-27T00:00:00","2022-11-28T00:00:00","2022-11-29T00:00:00","2022-11-30T00:00:00","2022-12-01T00:00:00","2022-12-02T00:00:00","2022-12-03T00:00:00","2022-12-04T00:00:00","2022-12-05T00:00:00","2022-12-06T00:00:00","2022-12-07T00:00:00","2022-12-08T00:00:00","2022-12-09T00:00:00","2022-12-10T00:00:00","2022-12-11T00:00:00","2022-12-12T00:00:00","2022-12-13T00:00:00","2022-12-14T00:00:00","2022-12-15T00:00:00","2022-12-16T00:00:00","2022-12-17T00:00:00","2022-12-18T00:00:00","2022-12-19T00:00:00","2022-12-20T00:00:00","2022-12-21T00:00:00","2022-12-22T00:00:00","2022-12-23T00:00:00","2022-12-24T00:00:00","2022-12-25T00:00:00","2022-12-26T00:00:00","2022-12-27T00:00:00","2022-12-28T00:00:00","2022-12-29T00:00:00","2022-12-30T00:00:00","2022-12-31T00:00:00"],"xaxis":"x","y":[0.04209677419353259,0.04229032515798609,0.04248387096612146,0.042677419354669156,0.04287096774238461,0.04306451612897688,0.04325806451613588,0.04345161290287917,0.043645161289882536,0.0438387096774274,0.044032258064503366,0.044225806451618575,0.04441935483870878,0.04461290322594601,0.04480645161285801,0.045000000000045726,0.04519354838709112,0.045387096774194884,0.04558064516128929,0.04577419354838707,0.045967741935484,0.0461612903225811,0.046354838709677874,0.04654838709677447,0.04674193548387123,0.046935483870968006,0.04712903225806477,0.047322580645162884,0.047516129032257964,0.047709677419354904,0.04790322580645167,0.048107071512175664,0.04832142705134023,0.04853571441034041,0.04874999992006451,0.04896428571811797,0.04917857142034336,0.04939285714302733,0.049607142857652164,0.04982142857129306,0.05003571428571477,0.05024999999999468,0.05046428571426582,0.05067857142855448,0.05089285714285089,0.051107142857143587,0.05132142857143157,0.05153571428571619,0.05175000000000081,0.0519642857142861,0.05217857142857139,0.05239285714285735,0.05260714285714332,0.05282142857142861,0.053035714285714575,0.05324999999999987,0.05346428571428583,0.05367857142857146,0.053892857142858096,0.05409683636384182,0.05429031610937239,0.05448387309810473,0.054677419257885856,0.05487096773461653,0.05506451613164649,0.05525806451638615,0.055451612903109855,0.05564516129032267,0.05583870967733876,0.05603225806453877,0.05622580645159191,0.056419354838720515,0.05661290322581408,0.05680645161290091,0.05700000000000256,0.05719354838709882,0.05738709677419306,0.05758064516129134,0.05777419354838761,0.05796774193548454,0.058161290322579454,0.05835483870968043,0.05854838709677063,0.05874193548387093,0.05893548387096719,0.05912903225806817,0.05932258064515972,0.059516129032258676,0.05970967741935763,0.05990339146551883,0.060200029025751674,0.06059999999490645,0.060999999993982784,0.06140000000055537,0.061800000000006954,0.06220000000000423,0.06259999999999949,0.0629999999999988,0.06340000000000078,0.06379999999999807,0.06419999999999938,0.06459999999999463,0.06499999999999731,0.06539999999999795,0.06579999999999994,0.06620000000000463,0.06660000000000259,0.06699999999999784,0.06740000000001062,0.06780000000000183,0.06819999999999507,0.06859999999999639,0.06900000000000107,0.06940000000000172,0.06979999999999698,0.07019999999999763,0.07060000000000097,0.07100000000000835,0.07140000000001843,0.07180000000002312,0.0721936968890589,0.07258065620682626,0.07296774396267412,0.07335483872971289,0.07374193537730106,0.07412903226592284,0.07451612902203461,0.07490322579998368,0.07529032258191028,0.07567741935482007,0.07606451612903146,0.07645161290322937,0.07683870967742729,0.07722580645161307,0.0776129032258056,0.07799999999999811,0.07838709677419334,0.07877419354838855,0.07916129032258241,0.07954838709677359,0.07993548387096612,0.08032258064515999,0.08070967741935656,0.08109677419355177,0.08148387096774429,0.08187096774194086,0.08225806451613338,0.0826451612903259,0.08303225806451572,0.08341935483870826,0.08380645161290347,0.08410319099202483,0.08429937986208205,0.08450003685830813,0.08470000540756936,0.08489999152429745,0.0850999980908549,0.08530001646780067,0.08550000050266303,0.08569999997227165,0.08590000000064955,0.08610000000197841,0.08630000000381255,0.08650000000170958,0.08670000000047434,0.08690000000006774,0.08709999999998723,0.08729999999998621,0.08749999999999192,0.08769999999999763,0.0878999999999993,0.08810000000000097,0.08830000000000264,0.08850000000000162,0.0887000000000006,0.08889999999999956,0.08910000000000123,0.0893000000000029,0.08950000000000188,0.08970000000000355,0.08990000000000253,0.08990280227096567,0.08970972721582156,0.08951612881201544,0.08932258223474492,0.08912903280717997,0.08893548368416372,0.08874193523478256,0.08854838700924356,0.08835483872271045,0.08816129034894941,0.08796774194518717,0.08777419354685224,0.08758064515819704,0.08738709677301544,0.08719354838724097,0.08700000000035087,0.08680645161303767,0.0866129032258134,0.08641935483870232,0.0862258064516155,0.08603225806452328,0.08583870967742027,0.08564516129032267,0.08545161290322775,0.08525806451613015,0.08506451612903254,0.08487096774193492,0.08467741935483732,0.0844838709677424,0.08429032258064749,0.08409677419354988,0.08381019903480019,0.08341915604318072,0.08303228378377281,0.08264516243731863,0.08225806321982722,0.08187096428177568,0.08148386966257627,0.08109677482957421,0.08070967815184472,0.0803225809238642,0.07993548379513851,0.07954838704327778,0.07916129023071672,0.07877419352748365,0.07838709674707152,0.07800000000553188,0.07761290322083234,0.0772258064581008,0.07683870967562716,0.07645161290628527,0.07606451612763286,0.07567741935607585,0.07529032257974365,0.07490322580702788,0.0745161290317844,0.07412903225776972,0.07374193548377392,0.07335483870965685,0.07296774193548589,0.07258064516129337,0.07219354838710623,0.07179993437746748,0.07140106147749369,0.07100040930947149,0.07060009850698946,0.07019987322293336,0.06979992676076816,0.06939997605809131,0.06899999535296822,0.06860000467355282,0.06820000377969268,0.06780000329394102,0.06740000126900365,0.0670000006985814,0.06659999994597186,0.06620000000051125,0.06580000000566037,0.06540000000278168,0.0650000000008273,0.06460000000013678,0.06419999999978851,0.06379999999988219,0.06339999999996238,0.06299999999999138,0.06259999999999881,0.062200000000000866,0.061800000000000216,0.061399999999996874,0.06099999999999892,0.060600000000003665,0.06019999999998955,0.05990128299137049,0.05970976022139506,0.05951615723928424,0.059322572599682,0.059129033055667406,0.05893548405993594,0.05874193537561007,0.058548387019656256,0.058354838611269735,0.058161290298152445,0.05796774190994997,0.057774193554174014,0.057580645166744944,0.05738709677441942,0.05719354838666429,0.0569999999997634,0.056806451612660396,0.056612903225665194,0.05641935483867268,0.05622580645161819,0.05603225806452328,0.055838709677431056,0.05564516129033075,0.055451612903227754,0.05525806451612476,0.055064516129032536,0.05487096774193762,0.05467741935483732,0.054483870967747795,0.0542903225806448,0.054096774193547185,0.05389997434051313,0.05370052097031913,0.05350006558004545,0.05329997458970832,0.05309999949859587,0.052900001493358606,0.05269999963624017,0.052500000821000196,0.05229999988073865,0.05210000000067305,0.051899999985059064,0.05170000000263961,0.051500000003310294,0.05130000000063403,0.051099999999399494,0.05089999999902998,0.05069999999954975,0.05049999999992939,0.05030000000013927,0.05010000000010391,0.049900000000041606,0.04970000000000625,0.04949999999999515,0.04929999999999752,0.049099999999999894,0.04890000000000226,0.04870000000000194,0.04849999999999892,0.0482999999999986,0.048099999999998276,0.04799659031108873,0.048000322822936814,0.04800021188873129,0.04800000664262269,0.04800001593050655,0.04800002123680046,0.048000011141923975,0.048000001892026,0.047999997406794274,0.04799999761501601,0.04799999908453578,0.048000000251782624,0.04800000050558689,0.04800000032020357,0.048000000051440485,0.04799999993048712,0.047999999947243376,0.04799999998839296,0.0480000000061463,0.04800000000560195,0.04800000000125524,0.04799999999927725,0.04799999999934193,0.04799999999984316,0.04800000000007491,0.04800000000007761,0.04800000000002371,0.04799999999999946,0.047999999999991376,0.04799999999999407,0.04799999999999946],"yaxis":"y","type":"scattergl"},{"hovertemplate":"variable=irrigation\u003cbr\u003etime=%{x}\u003cbr\u003evalue=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"irrigation","line":{"color":"#00cc96","dash":"solid"},"marker":{"symbol":"circle"},"mode":"lines","name":"irrigation","showlegend":true,"x":["2022-01-01T00:00:00","2022-01-02T00:00:00","2022-01-03T00:00:00","2022-01-04T00:00:00","2022-01-05T00:00:00","2022-01-06T00:00:00","2022-01-07T00:00:00","2022-01-08T00:00:00","2022-01-09T00:00:00","2022-01-10T00:00:00","2022-01-11T00:00:00","2022-01-12T00:00:00","2022-01-13T00:00:00","2022-01-14T00:00:00","2022-01-15T00:00:00","2022-01-16T00:00:00","2022-01-17T00:00:00","2022-01-18T00:00:00","2022-01-19T00:00:00","2022-01-20T00:00:00","2022-01-21T00:00:00","2022-01-22T00:00:00","2022-01-23T00:00:00","2022-01-24T00:00:00","2022-01-25T00:00:00","2022-01-26T00:00:00","2022-01-27T00:00:00","2022-01-28T00:00:00","2022-01-29T00:00:00","2022-01-30T00:00:00","2022-01-31T00:00:00","2022-02-01T00:00:00","2022-02-02T00:00:00","2022-02-03T00:00:00","2022-02-04T00:00:00","2022-02-05T00:00:00","2022-02-06T00:00:00","2022-02-07T00:00:00","2022-02-08T00:00:00","2022-02-09T00:00:00","2022-02-10T00:00:00","2022-02-11T00:00:00","2022-02-12T00:00:00","2022-02-13T00:00:00","2022-02-14T00:00:00","2022-02-15T00:00:00","2022-02-16T00:00:00","2022-02-17T00:00:00","2022-02-18T00:00:00","2022-02-19T00:00:00","2022-02-20T00:00:00","2022-02-21T00:00:00","2022-02-22T00:00:00","2022-02-23T00:00:00","2022-02-24T00:00:00","2022-02-25T00:00:00","2022-02-26T00:00:00","2022-02-27T00:00:00","2022-02-28T00:00:00","2022-03-01T00:00:00","2022-03-02T00:00:00","2022-03-03T00:00:00","2022-03-04T00:00:00","2022-03-05T00:00:00","2022-03-06T00:00:00","2022-03-07T00:00:00","2022-03-08T00:00:00","2022-03-09T00:00:00","2022-03-10T00:00:00","2022-03-11T00:00:00","2022-03-12T00:00:00","2022-03-13T00:00:00","2022-03-14T00:00:00","2022-03-15T00:00:00","2022-03-16T00:00:00","2022-03-17T00:00:00","2022-03-18T00:00:00","2022-03-19T00:00:00","2022-03-20T00:00:00","2022-03-21T00:00:00","2022-03-22T00:00:00","2022-03-23T00:00:00","2022-03-24T00:00:00","2022-03-25T00:00:00","2022-03-26T00:00:00","2022-03-27T00:00:00","2022-03-28T00:00:00","2022-03-29T00:00:00","2022-03-30T00:00:00","2022-03-31T00:00:00","2022-04-01T00:00:00","2022-04-02T00:00:00","2022-04-03T00:00:00","2022-04-04T00:00:00","2022-04-05T00:00:00","2022-04-06T00:00:00","2022-04-07T00:00:00","2022-04-08T00:00:00","2022-04-09T00:00:00","2022-04-10T00:00:00","2022-04-11T00:00:00","2022-04-12T00:00:00","2022-04-13T00:00:00","2022-04-14T00:00:00","2022-04-15T00:00:00","2022-04-16T00:00:00","2022-04-17T00:00:00","2022-04-18T00:00:00","2022-04-19T00:00:00","2022-04-20T00:00:00","2022-04-21T00:00:00","2022-04-22T00:00:00","2022-04-23T00:00:00","2022-04-24T00:00:00","2022-04-25T00:00:00","2022-04-26T00:00:00","2022-04-27T00:00:00","2022-04-28T00:00:00","2022-04-29T00:00:00","2022-04-30T00:00:00","2022-05-01T00:00:00","2022-05-02T00:00:00","2022-05-03T00:00:00","2022-05-04T00:00:00","2022-05-05T00:00:00","2022-05-06T00:00:00","2022-05-07T00:00:00","2022-05-08T00:00:00","2022-05-09T00:00:00","2022-05-10T00:00:00","2022-05-11T00:00:00","2022-05-12T00:00:00","2022-05-13T00:00:00","2022-05-14T00:00:00","2022-05-15T00:00:00","2022-05-16T00:00:00","2022-05-17T00:00:00","2022-05-18T00:00:00","2022-05-19T00:00:00","2022-05-20T00:00:00","2022-05-21T00:00:00","2022-05-22T00:00:00","2022-05-23T00:00:00","2022-05-24T00:00:00","2022-05-25T00:00:00","2022-05-26T00:00:00","2022-05-27T00:00:00","2022-05-28T00:00:00","2022-05-29T00:00:00","2022-05-30T00:00:00","2022-05-31T00:00:00","2022-06-01T00:00:00","2022-06-02T00:00:00","2022-06-03T00:00:00","2022-06-04T00:00:00","2022-06-05T00:00:00","2022-06-06T00:00:00","2022-06-07T00:00:00","2022-06-08T00:00:00","2022-06-09T00:00:00","2022-06-10T00:00:00","2022-06-11T00:00:00","2022-06-12T00:00:00","2022-06-13T00:00:00","2022-06-14T00:00:00","2022-06-15T00:00:00","2022-06-16T00:00:00","2022-06-17T00:00:00","2022-06-18T00:00:00","2022-06-19T00:00:00","2022-06-20T00:00:00","2022-06-21T00:00:00","2022-06-22T00:00:00","2022-06-23T00:00:00","2022-06-24T00:00:00","2022-06-25T00:00:00","2022-06-26T00:00:00","2022-06-27T00:00:00","2022-06-28T00:00:00","2022-06-29T00:00:00","2022-06-30T00:00:00","2022-07-01T00:00:00","2022-07-02T00:00:00","2022-07-03T00:00:00","2022-07-04T00:00:00","2022-07-05T00:00:00","2022-07-06T00:00:00","2022-07-07T00:00:00","2022-07-08T00:00:00","2022-07-09T00:00:00","2022-07-10T00:00:00","2022-07-11T00:00:00","2022-07-12T00:00:00","2022-07-13T00:00:00","2022-07-14T00:00:00","2022-07-15T00:00:00","2022-07-16T00:00:00","2022-07-17T00:00:00","2022-07-18T00:00:00","2022-07-19T00:00:00","2022-07-20T00:00:00","2022-07-21T00:00:00","2022-07-22T00:00:00","2022-07-23T00:00:00","2022-07-24T00:00:00","2022-07-25T00:00:00","2022-07-26T00:00:00","2022-07-27T00:00:00","2022-07-28T00:00:00","2022-07-29T00:00:00","2022-07-30T00:00:00","2022-07-31T00:00:00","2022-08-01T00:00:00","2022-08-02T00:00:00","2022-08-03T00:00:00","2022-08-04T00:00:00","2022-08-05T00:00:00","2022-08-06T00:00:00","2022-08-07T00:00:00","2022-08-08T00:00:00","2022-08-09T00:00:00","2022-08-10T00:00:00","2022-08-11T00:00:00","2022-08-12T00:00:00","2022-08-13T00:00:00","2022-08-14T00:00:00","2022-08-15T00:00:00","2022-08-16T00:00:00","2022-08-17T00:00:00","2022-08-18T00:00:00","2022-08-19T00:00:00","2022-08-20T00:00:00","2022-08-21T00:00:00","2022-08-22T00:00:00","2022-08-23T00:00:00","2022-08-24T00:00:00","2022-08-25T00:00:00","2022-08-26T00:00:00","2022-08-27T00:00:00","2022-08-28T00:00:00","2022-08-29T00:00:00","2022-08-30T00:00:00","2022-08-31T00:00:00","2022-09-01T00:00:00","2022-09-02T00:00:00","2022-09-03T00:00:00","2022-09-04T00:00:00","2022-09-05T00:00:00","2022-09-06T00:00:00","2022-09-07T00:00:00","2022-09-08T00:00:00","2022-09-09T00:00:00","2022-09-10T00:00:00","2022-09-11T00:00:00","2022-09-12T00:00:00","2022-09-13T00:00:00","2022-09-14T00:00:00","2022-09-15T00:00:00","2022-09-16T00:00:00","2022-09-17T00:00:00","2022-09-18T00:00:00","2022-09-19T00:00:00","2022-09-20T00:00:00","2022-09-21T00:00:00","2022-09-22T00:00:00","2022-09-23T00:00:00","2022-09-24T00:00:00","2022-09-25T00:00:00","2022-09-26T00:00:00","2022-09-27T00:00:00","2022-09-28T00:00:00","2022-09-29T00:00:00","2022-09-30T00:00:00","2022-10-01T00:00:00","2022-10-02T00:00:00","2022-10-03T00:00:00","2022-10-04T00:00:00","2022-10-05T00:00:00","2022-10-06T00:00:00","2022-10-07T00:00:00","2022-10-08T00:00:00","2022-10-09T00:00:00","2022-10-10T00:00:00","2022-10-11T00:00:00","2022-10-12T00:00:00","2022-10-13T00:00:00","2022-10-14T00:00:00","2022-10-15T00:00:00","2022-10-16T00:00:00","2022-10-17T00:00:00","2022-10-18T00:00:00","2022-10-19T00:00:00","2022-10-20T00:00:00","2022-10-21T00:00:00","2022-10-22T00:00:00","2022-10-23T00:00:00","2022-10-24T00:00:00","2022-10-25T00:00:00","2022-10-26T00:00:00","2022-10-27T00:00:00","2022-10-28T00:00:00","2022-10-29T00:00:00","2022-10-30T00:00:00","2022-10-31T00:00:00","2022-11-01T00:00:00","2022-11-02T00:00:00","2022-11-03T00:00:00","2022-11-04T00:00:00","2022-11-05T00:00:00","2022-11-06T00:00:00","2022-11-07T00:00:00","2022-11-08T00:00:00","2022-11-09T00:00:00","2022-11-10T00:00:00","2022-11-11T00:00:00","2022-11-12T00:00:00","2022-11-13T00:00:00","2022-11-14T00:00:00","2022-11-15T00:00:00","2022-11-16T00:00:00","2022-11-17T00:00:00","2022-11-18T00:00:00","2022-11-19T00:00:00","2022-11-20T00:00:00","2022-11-21T00:00:00","2022-11-22T00:00:00","2022-11-23T00:00:00","2022-11-24T00:00:00","2022-11-25T00:00:00","2022-11-26T00:00:00","2022-11-27T00:00:00","2022-11-28T00:00:00","2022-11-29T00:00:00","2022-11-30T00:00:00","2022-12-01T00:00:00","2022-12-02T00:00:00","2022-12-03T00:00:00","2022-12-04T00:00:00","2022-12-05T00:00:00","2022-12-06T00:00:00","2022-12-07T00:00:00","2022-12-08T00:00:00","2022-12-09T00:00:00","2022-12-10T00:00:00","2022-12-11T00:00:00","2022-12-12T00:00:00","2022-12-13T00:00:00","2022-12-14T00:00:00","2022-12-15T00:00:00","2022-12-16T00:00:00","2022-12-17T00:00:00","2022-12-18T00:00:00","2022-12-19T00:00:00","2022-12-20T00:00:00","2022-12-21T00:00:00","2022-12-22T00:00:00","2022-12-23T00:00:00","2022-12-24T00:00:00","2022-12-25T00:00:00","2022-12-26T00:00:00","2022-12-27T00:00:00","2022-12-28T00:00:00","2022-12-29T00:00:00","2022-12-30T00:00:00","2022-12-31T00:00:00"],"xaxis":"x","y":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,4.999999999999825,10.0109894428942,10.03296703268745,10.05494505461432,10.076923076953573,10.09890109890126,10.120879120879389,10.142857142857144,10.164835164834987,10.186813186813076,10.2087912087912,10.23076923076928,10.252747252747131,10.27472527472518,10.296703296703248,10.31868131868123,10.34065934065945,10.362637362637496,10.38461538461537,10.406593406593245,10.428571428571294,10.45054945054947,10.472527472527473,10.494505494505477,10.516483516483525,10.538461538461572,10.560439560439576,10.582417582417536,10.604395604395497,10.626373626373459,10.648351648351419,10.67032967032938,10.692307692308031,10.714285714285733,10.73626373626365,10.758241758241827,10.780219780219873,10.802197802197792,10.824175824175796,10.8461538461538,10.86813186813163,10.890109890109807,10.912087912087554,10.934065934066075,10.956043956044079,10.978021978021996,10.999999999999828,11.021978021977832,11.043956043955921,11.065934065933925,11.087912087912102,11.109890109890278,11.13186813186837,11.153846153846374,11.175824175824376,11.197802197802295,11.219780219780299,11.241758241758216,11.263736263736307,11.285714285714224,11.307692307692228,11.329670329670318,11.351648351648581,11.373626373626067,11.395604395605968,11.417582417582938,11.439560439560424,11.461538461538343,11.483516483516691,11.5054945054953,11.527472527472613,11.54945054945053,11.571428571428706,11.59340659340671,11.61538461538463,11.637362637362546,11.659340659340637,11.681318681318727,11.703296703296816,11.725274725274907,11.747252747252652,11.769230769230916,11.791208791208833,11.813186813187096,11.835164835164841,11.85714285714293,11.879120879121022,11.901098901098939,11.923076923077202,11.945054945054947,11.96703296703321,11.989010989011128,11.999976347324921,12.000002780922827,11.999999987699988,12.000000088771081,12.000000030665175,11.999999989567636,11.999999986089662,11.999999995111937,12.000000000727466,12.000000001472179,12.000000000541547,11.999999999914284,11.999999999827187,11.999999999934117,12.000000000008278,12.000000000019488,12.000000000007761,12.00000000000069,11.999999999999655,11.999999999999828,12.0,12.0,11.999999999999655,11.999999999999828,12.000000000000172,12.000000000000172,11.999999999999828,11.999999999999828,12.0,12.000000000000345,12.000000000000172,11.999999999999655,11.999999999998447,12.0,12.0,12.000000000000172,11.999999999999828,11.999999999999828,12.0,12.0,12.000000000000172,11.999999999999828,11.999999999999828,12.0,12.0,12.0,11.999999999999655,12.00000000000069,11.999999999999655,12.00000000000069,12.0,12.0,12.0,12.0,12.0,12.0,12.0,12.0,12.000000000000345,12.0,12.000000000000345,11.999999999999655,11.999999999999655,12.0,12.0,12.000000000000345,12.000000000000345,12.0,12.0,12.0,12.000000000000345,12.0,12.000000000000345,12.000000000000345,12.000000000000345,12.0,11.999999999999655,12.0,12.000000000000345,12.0,12.0,12.0,12.0,12.00000000000069,12.000000000000345,12.000000000000345,12.0,12.0,12.00000000000069,12.00000000000069,12.0,5.999798934980192,0.0002096597539881865,0.0,7.146348555882771e-09,5.971019466718038e-08,0.0,8.575066372200295e-10,7.260866739131787e-10,5.139520874729863e-10,6.526156708046242e-10,1.6142924626668295e-10,1.6867286629147e-10,0.0,0.0,0.0,3.449342868946217e-12,2.06960572136773e-12,1.7246714344731084e-12,6.898685737892433e-13,3.4493428689462166e-13,0.0,3.4493428689462166e-13,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.4493428689462166e-13,0.0,0.0,0.0,0.0,3.4493428689462166e-13,0.0,0.0,0.0,0.0,3.4493428689462166e-13,0.0,0.0,0.0,3.4493428689462166e-13,3.4493428689462166e-13,3.4493428689462166e-13,0.0,3.4493428689462166e-13,3.4493428689462166e-13,3.4493428689462166e-13,3.4493428689462166e-13,0.0,3.4493428689462166e-13,3.4493428689462166e-13,3.4493428689462166e-13,3.4493428689462166e-13,0.0,3.4493428689462166e-13,3.4493428689462166e-13,3.4493428689462166e-13,0.0,0.0,0.0,0.0,6.898685737892433e-13,1.034802860683865e-12,3.4493428689462166e-13,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,6.898685737892433e-13,3.4493428689462166e-13,6.898685737892433e-13,6.898685737892433e-13,6.898685737892433e-13,6.898685737892433e-13,3.4493428689462166e-13,0.0,0.0,0.0,3.4493428689462166e-13,3.4493428689462166e-13,3.4493428689462166e-13,0.0,0.0,0.0,0.0,3.4493428689462166e-13],"yaxis":"y","type":"scattergl"},{"hovertemplate":"variable=main\u003cbr\u003etime=%{x}\u003cbr\u003evalue=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"main","line":{"color":"#ab63fa","dash":"solid"},"marker":{"symbol":"circle"},"mode":"lines","name":"main","showlegend":true,"x":["2022-01-01T00:00:00","2022-01-02T00:00:00","2022-01-03T00:00:00","2022-01-04T00:00:00","2022-01-05T00:00:00","2022-01-06T00:00:00","2022-01-07T00:00:00","2022-01-08T00:00:00","2022-01-09T00:00:00","2022-01-10T00:00:00","2022-01-11T00:00:00","2022-01-12T00:00:00","2022-01-13T00:00:00","2022-01-14T00:00:00","2022-01-15T00:00:00","2022-01-16T00:00:00","2022-01-17T00:00:00","2022-01-18T00:00:00","2022-01-19T00:00:00","2022-01-20T00:00:00","2022-01-21T00:00:00","2022-01-22T00:00:00","2022-01-23T00:00:00","2022-01-24T00:00:00","2022-01-25T00:00:00","2022-01-26T00:00:00","2022-01-27T00:00:00","2022-01-28T00:00:00","2022-01-29T00:00:00","2022-01-30T00:00:00","2022-01-31T00:00:00","2022-02-01T00:00:00","2022-02-02T00:00:00","2022-02-03T00:00:00","2022-02-04T00:00:00","2022-02-05T00:00:00","2022-02-06T00:00:00","2022-02-07T00:00:00","2022-02-08T00:00:00","2022-02-09T00:00:00","2022-02-10T00:00:00","2022-02-11T00:00:00","2022-02-12T00:00:00","2022-02-13T00:00:00","2022-02-14T00:00:00","2022-02-15T00:00:00","2022-02-16T00:00:00","2022-02-17T00:00:00","2022-02-18T00:00:00","2022-02-19T00:00:00","2022-02-20T00:00:00","2022-02-21T00:00:00","2022-02-22T00:00:00","2022-02-23T00:00:00","2022-02-24T00:00:00","2022-02-25T00:00:00","2022-02-26T00:00:00","2022-02-27T00:00:00","2022-02-28T00:00:00","2022-03-01T00:00:00","2022-03-02T00:00:00","2022-03-03T00:00:00","2022-03-04T00:00:00","2022-03-05T00:00:00","2022-03-06T00:00:00","2022-03-07T00:00:00","2022-03-08T00:00:00","2022-03-09T00:00:00","2022-03-10T00:00:00","2022-03-11T00:00:00","2022-03-12T00:00:00","2022-03-13T00:00:00","2022-03-14T00:00:00","2022-03-15T00:00:00","2022-03-16T00:00:00","2022-03-17T00:00:00","2022-03-18T00:00:00","2022-03-19T00:00:00","2022-03-20T00:00:00","2022-03-21T00:00:00","2022-03-22T00:00:00","2022-03-23T00:00:00","2022-03-24T00:00:00","2022-03-25T00:00:00","2022-03-26T00:00:00","2022-03-27T00:00:00","2022-03-28T00:00:00","2022-03-29T00:00:00","2022-03-30T00:00:00","2022-03-31T00:00:00","2022-04-01T00:00:00","2022-04-02T00:00:00","2022-04-03T00:00:00","2022-04-04T00:00:00","2022-04-05T00:00:00","2022-04-06T00:00:00","2022-04-07T00:00:00","2022-04-08T00:00:00","2022-04-09T00:00:00","2022-04-10T00:00:00","2022-04-11T00:00:00","2022-04-12T00:00:00","2022-04-13T00:00:00","2022-04-14T00:00:00","2022-04-15T00:00:00","2022-04-16T00:00:00","2022-04-17T00:00:00","2022-04-18T00:00:00","2022-04-19T00:00:00","2022-04-20T00:00:00","2022-04-21T00:00:00","2022-04-22T00:00:00","2022-04-23T00:00:00","2022-04-24T00:00:00","2022-04-25T00:00:00","2022-04-26T00:00:00","2022-04-27T00:00:00","2022-04-28T00:00:00","2022-04-29T00:00:00","2022-04-30T00:00:00","2022-05-01T00:00:00","2022-05-02T00:00:00","2022-05-03T00:00:00","2022-05-04T00:00:00","2022-05-05T00:00:00","2022-05-06T00:00:00","2022-05-07T00:00:00","2022-05-08T00:00:00","2022-05-09T00:00:00","2022-05-10T00:00:00","2022-05-11T00:00:00","2022-05-12T00:00:00","2022-05-13T00:00:00","2022-05-14T00:00:00","2022-05-15T00:00:00","2022-05-16T00:00:00","2022-05-17T00:00:00","2022-05-18T00:00:00","2022-05-19T00:00:00","2022-05-20T00:00:00","2022-05-21T00:00:00","2022-05-22T00:00:00","2022-05-23T00:00:00","2022-05-24T00:00:00","2022-05-25T00:00:00","2022-05-26T00:00:00","2022-05-27T00:00:00","2022-05-28T00:00:00","2022-05-29T00:00:00","2022-05-30T00:00:00","2022-05-31T00:00:00","2022-06-01T00:00:00","2022-06-02T00:00:00","2022-06-03T00:00:00","2022-06-04T00:00:00","2022-06-05T00:00:00","2022-06-06T00:00:00","2022-06-07T00:00:00","2022-06-08T00:00:00","2022-06-09T00:00:00","2022-06-10T00:00:00","2022-06-11T00:00:00","2022-06-12T00:00:00","2022-06-13T00:00:00","2022-06-14T00:00:00","2022-06-15T00:00:00","2022-06-16T00:00:00","2022-06-17T00:00:00","2022-06-18T00:00:00","2022-06-19T00:00:00","2022-06-20T00:00:00","2022-06-21T00:00:00","2022-06-22T00:00:00","2022-06-23T00:00:00","2022-06-24T00:00:00","2022-06-25T00:00:00","2022-06-26T00:00:00","2022-06-27T00:00:00","2022-06-28T00:00:00","2022-06-29T00:00:00","2022-06-30T00:00:00","2022-07-01T00:00:00","2022-07-02T00:00:00","2022-07-03T00:00:00","2022-07-04T00:00:00","2022-07-05T00:00:00","2022-07-06T00:00:00","2022-07-07T00:00:00","2022-07-08T00:00:00","2022-07-09T00:00:00","2022-07-10T00:00:00","2022-07-11T00:00:00","2022-07-12T00:00:00","2022-07-13T00:00:00","2022-07-14T00:00:00","2022-07-15T00:00:00","2022-07-16T00:00:00","2022-07-17T00:00:00","2022-07-18T00:00:00","2022-07-19T00:00:00","2022-07-20T00:00:00","2022-07-21T00:00:00","2022-07-22T00:00:00","2022-07-23T00:00:00","2022-07-24T00:00:00","2022-07-25T00:00:00","2022-07-26T00:00:00","2022-07-27T00:00:00","2022-07-28T00:00:00","2022-07-29T00:00:00","2022-07-30T00:00:00","2022-07-31T00:00:00","2022-08-01T00:00:00","2022-08-02T00:00:00","2022-08-03T00:00:00","2022-08-04T00:00:00","2022-08-05T00:00:00","2022-08-06T00:00:00","2022-08-07T00:00:00","2022-08-08T00:00:00","2022-08-09T00:00:00","2022-08-10T00:00:00","2022-08-11T00:00:00","2022-08-12T00:00:00","2022-08-13T00:00:00","2022-08-14T00:00:00","2022-08-15T00:00:00","2022-08-16T00:00:00","2022-08-17T00:00:00","2022-08-18T00:00:00","2022-08-19T00:00:00","2022-08-20T00:00:00","2022-08-21T00:00:00","2022-08-22T00:00:00","2022-08-23T00:00:00","2022-08-24T00:00:00","2022-08-25T00:00:00","2022-08-26T00:00:00","2022-08-27T00:00:00","2022-08-28T00:00:00","2022-08-29T00:00:00","2022-08-30T00:00:00","2022-08-31T00:00:00","2022-09-01T00:00:00","2022-09-02T00:00:00","2022-09-03T00:00:00","2022-09-04T00:00:00","2022-09-05T00:00:00","2022-09-06T00:00:00","2022-09-07T00:00:00","2022-09-08T00:00:00","2022-09-09T00:00:00","2022-09-10T00:00:00","2022-09-11T00:00:00","2022-09-12T00:00:00","2022-09-13T00:00:00","2022-09-14T00:00:00","2022-09-15T00:00:00","2022-09-16T00:00:00","2022-09-17T00:00:00","2022-09-18T00:00:00","2022-09-19T00:00:00","2022-09-20T00:00:00","2022-09-21T00:00:00","2022-09-22T00:00:00","2022-09-23T00:00:00","2022-09-24T00:00:00","2022-09-25T00:00:00","2022-09-26T00:00:00","2022-09-27T00:00:00","2022-09-28T00:00:00","2022-09-29T00:00:00","2022-09-30T00:00:00","2022-10-01T00:00:00","2022-10-02T00:00:00","2022-10-03T00:00:00","2022-10-04T00:00:00","2022-10-05T00:00:00","2022-10-06T00:00:00","2022-10-07T00:00:00","2022-10-08T00:00:00","2022-10-09T00:00:00","2022-10-10T00:00:00","2022-10-11T00:00:00","2022-10-12T00:00:00","2022-10-13T00:00:00","2022-10-14T00:00:00","2022-10-15T00:00:00","2022-10-16T00:00:00","2022-10-17T00:00:00","2022-10-18T00:00:00","2022-10-19T00:00:00","2022-10-20T00:00:00","2022-10-21T00:00:00","2022-10-22T00:00:00","2022-10-23T00:00:00","2022-10-24T00:00:00","2022-10-25T00:00:00","2022-10-26T00:00:00","2022-10-27T00:00:00","2022-10-28T00:00:00","2022-10-29T00:00:00","2022-10-30T00:00:00","2022-10-31T00:00:00","2022-11-01T00:00:00","2022-11-02T00:00:00","2022-11-03T00:00:00","2022-11-04T00:00:00","2022-11-05T00:00:00","2022-11-06T00:00:00","2022-11-07T00:00:00","2022-11-08T00:00:00","2022-11-09T00:00:00","2022-11-10T00:00:00","2022-11-11T00:00:00","2022-11-12T00:00:00","2022-11-13T00:00:00","2022-11-14T00:00:00","2022-11-15T00:00:00","2022-11-16T00:00:00","2022-11-17T00:00:00","2022-11-18T00:00:00","2022-11-19T00:00:00","2022-11-20T00:00:00","2022-11-21T00:00:00","2022-11-22T00:00:00","2022-11-23T00:00:00","2022-11-24T00:00:00","2022-11-25T00:00:00","2022-11-26T00:00:00","2022-11-27T00:00:00","2022-11-28T00:00:00","2022-11-29T00:00:00","2022-11-30T00:00:00","2022-12-01T00:00:00","2022-12-02T00:00:00","2022-12-03T00:00:00","2022-12-04T00:00:00","2022-12-05T00:00:00","2022-12-06T00:00:00","2022-12-07T00:00:00","2022-12-08T00:00:00","2022-12-09T00:00:00","2022-12-10T00:00:00","2022-12-11T00:00:00","2022-12-12T00:00:00","2022-12-13T00:00:00","2022-12-14T00:00:00","2022-12-15T00:00:00","2022-12-16T00:00:00","2022-12-17T00:00:00","2022-12-18T00:00:00","2022-12-19T00:00:00","2022-12-20T00:00:00","2022-12-21T00:00:00","2022-12-22T00:00:00","2022-12-23T00:00:00","2022-12-24T00:00:00","2022-12-25T00:00:00","2022-12-26T00:00:00","2022-12-27T00:00:00","2022-12-28T00:00:00","2022-12-29T00:00:00","2022-12-30T00:00:00","2022-12-31T00:00:00"],"xaxis":"x","y":[74.42903225806452,73.88709677419355,73.34516129032258,72.80322580645162,72.2612903225806,71.71935483870972,71.17741935483879,70.63548387096763,70.09354838709683,69.55161290322586,69.00967741935479,68.4677419354839,67.92580645161267,67.38387096774213,66.84193548387107,66.29999999999983,65.75806451612911,65.21612903225805,64.67419354838698,64.13225806451626,63.59032258064521,63.04838709677397,62.506451612903426,61.96451612903219,61.422580645161304,60.88064516129041,60.33870967741952,59.79677419354794,59.25483870967774,58.71290322580651,58.17096774193527,57.99464285714286,58.18392857142857,58.37321428571429,58.56249999999998,58.75178571428573,58.94107142857142,59.13035714285716,59.319642857142846,59.50892857142862,59.69821428571422,59.8875,60.07678571428569,60.266071428571465,60.45535714285715,60.644642857142934,60.83392857142845,61.02321428571431,61.2125,61.40178571428569,61.59107142857155,61.78035714285707,61.96964285714276,62.15892857142862,62.34821428571431,62.5375,62.72678571428569,62.916071428571726,63.105357142856896,65.1467741935484,69.04032258064517,72.93387096774192,76.8274193548387,80.72096774193548,84.6145161290322,88.50806451612911,92.40161290322585,96.29516129032251,100.18870967741935,104.08225806451627,107.97580645161284,111.86935483870977,115.76290322580634,119.65645161290325,123.54999999999983,127.44354838709693,131.3370967741935,135.23064516129043,139.12419354838698,143.01774193548425,146.91129032258047,150.80483870967706,154.69838709677433,158.59193548387123,162.48548387096747,166.37903225806437,170.27258064516164,174.16612903225823,178.0596774193541,181.95322580645205,182.365,179.29500000000004,176.22500000000005,173.15499999999992,170.085,167.015,163.945,160.875,157.805,154.735,151.665,148.59500000000034,145.52499999999966,142.455,139.385,136.315,133.245,130.17500000000035,127.105,124.03499999999931,120.96500000000104,117.89499999999931,114.825,111.755,108.685,105.615,102.545,99.47500000000069,96.4049999999993,93.335,91.08548387096774,89.65645161290324,88.2274193548387,86.79838709677419,85.36935483870963,83.9403225806452,82.51129032258065,81.0822580645161,79.65322580645172,78.22419354838699,76.7951612903226,75.36612903225804,73.93709677419366,72.50806451612894,71.07903225806456,69.64999999999982,68.22096774193562,66.79193548387089,65.3629032258065,63.93387096774178,62.50483870967774,61.07580645161267,59.64677419354829,58.21774193548425,56.78870967741918,55.359677419354796,53.930645161290066,52.50161290322637,51.072580645160954,49.64354838709657,48.21451612903288,47.251666666666665,46.75499999999999,46.25833333333335,45.76166666666666,45.265,44.76833333333333,44.27166666666671,43.774999999999956,43.278333333333336,42.781666666666666,42.285,41.788333333333334,41.291666666666664,40.795,40.29833333333333,39.801666666666755,39.305,38.808333333333245,38.31166666666667,37.815,37.318333333333335,36.821666666666665,36.325,35.82833333333333,35.33166666666666,34.835,34.33833333333333,33.84166666666667,33.345,32.848333333333336,32.51935483870968,32.358064516129026,32.19677419354839,32.03548387096775,31.874193548387073,31.712903225806464,31.551612903225834,31.39032258064512,31.22903225806451,31.067741935483905,30.90645161290321,30.74516129032256,30.583870967741994,30.4225806451613,30.261290322580564,30.100000000000087,29.93870967741935,29.777419354838614,29.616129032258133,29.454838709677396,29.293548387096745,29.132258064516183,28.970967741935446,28.80967741935488,28.64838709677423,28.487096774193493,28.325806451613015,28.16451612903219,28.00322580645154,27.84193548387106,27.68064516129024,27.58225806451613,27.546774193548394,27.51129032258064,27.475806451612907,27.440322580645162,27.404838709677417,27.369354838709675,27.33387096774195,27.298387096774185,27.262903225806465,27.2274193548387,27.19193548387093,27.156451612903254,27.120967741935488,27.08548387096772,27.05,27.014516129032277,26.979032258064557,26.943548387096747,26.908064516129024,26.872580645161303,26.83709677419358,26.80161290322577,26.766129032258046,26.730645161290326,26.695161290322602,26.659677419354793,26.624193548387158,26.58870967741935,26.553225806451714,26.51774193548373,26.476666666666667,26.43,26.383333333333333,26.336666666666666,26.29,26.243333333333332,26.196666666666665,26.15,26.10333333333333,26.05666666666667,26.01,25.963333333333335,25.916666666666668,25.87,25.823333333333334,25.776666666666667,25.73,25.683333333333334,25.636666666666667,25.59,25.543333333333333,25.496666666666666,25.45,25.403333333333332,25.356666666666666,25.31,25.263333333333332,25.216666666666665,25.17,25.123333333333335,25.32903225806452,25.787096774193554,26.24516129032258,26.703225806451606,27.16129032258065,27.619354838709697,28.07741935483868,28.535483870967745,28.99354838709679,29.451612903225815,29.909677419354836,30.36774193548386,30.825806451612927,31.28387096774195,31.74193548387089,32.20000000000009,32.65806451612894,33.11612903225814,33.57419354838707,34.03225806451609,34.490322580645206,34.948387096774226,35.40645161290317,35.864516129032275,36.32258064516122,36.78064516129032,37.23870967741935,37.69677419354846,38.1548387096774,38.612903225806335,39.07096774193579,39.275,39.225,39.174999999999976,39.125,39.075000000000024,39.025,38.975,38.924999999999955,38.875,38.825000000000045,38.775,38.725,38.67499999999991,38.625,38.57500000000009,38.525,38.475,38.42499999999991,38.375,38.325,38.275000000000084,38.225,38.17499999999983,38.125,38.07500000000017,38.025,37.975,37.92499999999983,37.875,37.82500000000017,38.1241935483871,38.772580645161284,39.42096774193548,40.06935483870967,40.71774193548391,41.36612903225805,42.01451612903219,42.66290322580651,43.31129032258065,43.95967741935484,44.60806451612894,45.256451612903255,45.904838709677485,46.55322580645154,47.20161290322577,47.85000000000009,48.49838709677423,49.146774193548374,49.79516129032243,50.44354838709692,51.09193548387106,51.740322580645035,52.38870967741935,53.03709677419349,53.68548387096781,54.33387096774195,54.982258064515925,55.63064516129041,56.279032258064724,56.92741935483853,57.57580645161284],"yaxis":"y","type":"scattergl"},{"hovertemplate":"variable=minor\u003cbr\u003etime=%{x}\u003cbr\u003evalue=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"minor","line":{"color":"#FFA15A","dash":"solid"},"marker":{"symbol":"circle"},"mode":"lines","name":"minor","showlegend":true,"x":["2022-01-01T00:00:00","2022-01-02T00:00:00","2022-01-03T00:00:00","2022-01-04T00:00:00","2022-01-05T00:00:00","2022-01-06T00:00:00","2022-01-07T00:00:00","2022-01-08T00:00:00","2022-01-09T00:00:00","2022-01-10T00:00:00","2022-01-11T00:00:00","2022-01-12T00:00:00","2022-01-13T00:00:00","2022-01-14T00:00:00","2022-01-15T00:00:00","2022-01-16T00:00:00","2022-01-17T00:00:00","2022-01-18T00:00:00","2022-01-19T00:00:00","2022-01-20T00:00:00","2022-01-21T00:00:00","2022-01-22T00:00:00","2022-01-23T00:00:00","2022-01-24T00:00:00","2022-01-25T00:00:00","2022-01-26T00:00:00","2022-01-27T00:00:00","2022-01-28T00:00:00","2022-01-29T00:00:00","2022-01-30T00:00:00","2022-01-31T00:00:00","2022-02-01T00:00:00","2022-02-02T00:00:00","2022-02-03T00:00:00","2022-02-04T00:00:00","2022-02-05T00:00:00","2022-02-06T00:00:00","2022-02-07T00:00:00","2022-02-08T00:00:00","2022-02-09T00:00:00","2022-02-10T00:00:00","2022-02-11T00:00:00","2022-02-12T00:00:00","2022-02-13T00:00:00","2022-02-14T00:00:00","2022-02-15T00:00:00","2022-02-16T00:00:00","2022-02-17T00:00:00","2022-02-18T00:00:00","2022-02-19T00:00:00","2022-02-20T00:00:00","2022-02-21T00:00:00","2022-02-22T00:00:00","2022-02-23T00:00:00","2022-02-24T00:00:00","2022-02-25T00:00:00","2022-02-26T00:00:00","2022-02-27T00:00:00","2022-02-28T00:00:00","2022-03-01T00:00:00","2022-03-02T00:00:00","2022-03-03T00:00:00","2022-03-04T00:00:00","2022-03-05T00:00:00","2022-03-06T00:00:00","2022-03-07T00:00:00","2022-03-08T00:00:00","2022-03-09T00:00:00","2022-03-10T00:00:00","2022-03-11T00:00:00","2022-03-12T00:00:00","2022-03-13T00:00:00","2022-03-14T00:00:00","2022-03-15T00:00:00","2022-03-16T00:00:00","2022-03-17T00:00:00","2022-03-18T00:00:00","2022-03-19T00:00:00","2022-03-20T00:00:00","2022-03-21T00:00:00","2022-03-22T00:00:00","2022-03-23T00:00:00","2022-03-24T00:00:00","2022-03-25T00:00:00","2022-03-26T00:00:00","2022-03-27T00:00:00","2022-03-28T00:00:00","2022-03-29T00:00:00","2022-03-30T00:00:00","2022-03-31T00:00:00","2022-04-01T00:00:00","2022-04-02T00:00:00","2022-04-03T00:00:00","2022-04-04T00:00:00","2022-04-05T00:00:00","2022-04-06T00:00:00","2022-04-07T00:00:00","2022-04-08T00:00:00","2022-04-09T00:00:00","2022-04-10T00:00:00","2022-04-11T00:00:00","2022-04-12T00:00:00","2022-04-13T00:00:00","2022-04-14T00:00:00","2022-04-15T00:00:00","2022-04-16T00:00:00","2022-04-17T00:00:00","2022-04-18T00:00:00","2022-04-19T00:00:00","2022-04-20T00:00:00","2022-04-21T00:00:00","2022-04-22T00:00:00","2022-04-23T00:00:00","2022-04-24T00:00:00","2022-04-25T00:00:00","2022-04-26T00:00:00","2022-04-27T00:00:00","2022-04-28T00:00:00","2022-04-29T00:00:00","2022-04-30T00:00:00","2022-05-01T00:00:00","2022-05-02T00:00:00","2022-05-03T00:00:00","2022-05-04T00:00:00","2022-05-05T00:00:00","2022-05-06T00:00:00","2022-05-07T00:00:00","2022-05-08T00:00:00","2022-05-09T00:00:00","2022-05-10T00:00:00","2022-05-11T00:00:00","2022-05-12T00:00:00","2022-05-13T00:00:00","2022-05-14T00:00:00","2022-05-15T00:00:00","2022-05-16T00:00:00","2022-05-17T00:00:00","2022-05-18T00:00:00","2022-05-19T00:00:00","2022-05-20T00:00:00","2022-05-21T00:00:00","2022-05-22T00:00:00","2022-05-23T00:00:00","2022-05-24T00:00:00","2022-05-25T00:00:00","2022-05-26T00:00:00","2022-05-27T00:00:00","2022-05-28T00:00:00","2022-05-29T00:00:00","2022-05-30T00:00:00","2022-05-31T00:00:00","2022-06-01T00:00:00","2022-06-02T00:00:00","2022-06-03T00:00:00","2022-06-04T00:00:00","2022-06-05T00:00:00","2022-06-06T00:00:00","2022-06-07T00:00:00","2022-06-08T00:00:00","2022-06-09T00:00:00","2022-06-10T00:00:00","2022-06-11T00:00:00","2022-06-12T00:00:00","2022-06-13T00:00:00","2022-06-14T00:00:00","2022-06-15T00:00:00","2022-06-16T00:00:00","2022-06-17T00:00:00","2022-06-18T00:00:00","2022-06-19T00:00:00","2022-06-20T00:00:00","2022-06-21T00:00:00","2022-06-22T00:00:00","2022-06-23T00:00:00","2022-06-24T00:00:00","2022-06-25T00:00:00","2022-06-26T00:00:00","2022-06-27T00:00:00","2022-06-28T00:00:00","2022-06-29T00:00:00","2022-06-30T00:00:00","2022-07-01T00:00:00","2022-07-02T00:00:00","2022-07-03T00:00:00","2022-07-04T00:00:00","2022-07-05T00:00:00","2022-07-06T00:00:00","2022-07-07T00:00:00","2022-07-08T00:00:00","2022-07-09T00:00:00","2022-07-10T00:00:00","2022-07-11T00:00:00","2022-07-12T00:00:00","2022-07-13T00:00:00","2022-07-14T00:00:00","2022-07-15T00:00:00","2022-07-16T00:00:00","2022-07-17T00:00:00","2022-07-18T00:00:00","2022-07-19T00:00:00","2022-07-20T00:00:00","2022-07-21T00:00:00","2022-07-22T00:00:00","2022-07-23T00:00:00","2022-07-24T00:00:00","2022-07-25T00:00:00","2022-07-26T00:00:00","2022-07-27T00:00:00","2022-07-28T00:00:00","2022-07-29T00:00:00","2022-07-30T00:00:00","2022-07-31T00:00:00","2022-08-01T00:00:00","2022-08-02T00:00:00","2022-08-03T00:00:00","2022-08-04T00:00:00","2022-08-05T00:00:00","2022-08-06T00:00:00","2022-08-07T00:00:00","2022-08-08T00:00:00","2022-08-09T00:00:00","2022-08-10T00:00:00","2022-08-11T00:00:00","2022-08-12T00:00:00","2022-08-13T00:00:00","2022-08-14T00:00:00","2022-08-15T00:00:00","2022-08-16T00:00:00","2022-08-17T00:00:00","2022-08-18T00:00:00","2022-08-19T00:00:00","2022-08-20T00:00:00","2022-08-21T00:00:00","2022-08-22T00:00:00","2022-08-23T00:00:00","2022-08-24T00:00:00","2022-08-25T00:00:00","2022-08-26T00:00:00","2022-08-27T00:00:00","2022-08-28T00:00:00","2022-08-29T00:00:00","2022-08-30T00:00:00","2022-08-31T00:00:00","2022-09-01T00:00:00","2022-09-02T00:00:00","2022-09-03T00:00:00","2022-09-04T00:00:00","2022-09-05T00:00:00","2022-09-06T00:00:00","2022-09-07T00:00:00","2022-09-08T00:00:00","2022-09-09T00:00:00","2022-09-10T00:00:00","2022-09-11T00:00:00","2022-09-12T00:00:00","2022-09-13T00:00:00","2022-09-14T00:00:00","2022-09-15T00:00:00","2022-09-16T00:00:00","2022-09-17T00:00:00","2022-09-18T00:00:00","2022-09-19T00:00:00","2022-09-20T00:00:00","2022-09-21T00:00:00","2022-09-22T00:00:00","2022-09-23T00:00:00","2022-09-24T00:00:00","2022-09-25T00:00:00","2022-09-26T00:00:00","2022-09-27T00:00:00","2022-09-28T00:00:00","2022-09-29T00:00:00","2022-09-30T00:00:00","2022-10-01T00:00:00","2022-10-02T00:00:00","2022-10-03T00:00:00","2022-10-04T00:00:00","2022-10-05T00:00:00","2022-10-06T00:00:00","2022-10-07T00:00:00","2022-10-08T00:00:00","2022-10-09T00:00:00","2022-10-10T00:00:00","2022-10-11T00:00:00","2022-10-12T00:00:00","2022-10-13T00:00:00","2022-10-14T00:00:00","2022-10-15T00:00:00","2022-10-16T00:00:00","2022-10-17T00:00:00","2022-10-18T00:00:00","2022-10-19T00:00:00","2022-10-20T00:00:00","2022-10-21T00:00:00","2022-10-22T00:00:00","2022-10-23T00:00:00","2022-10-24T00:00:00","2022-10-25T00:00:00","2022-10-26T00:00:00","2022-10-27T00:00:00","2022-10-28T00:00:00","2022-10-29T00:00:00","2022-10-30T00:00:00","2022-10-31T00:00:00","2022-11-01T00:00:00","2022-11-02T00:00:00","2022-11-03T00:00:00","2022-11-04T00:00:00","2022-11-05T00:00:00","2022-11-06T00:00:00","2022-11-07T00:00:00","2022-11-08T00:00:00","2022-11-09T00:00:00","2022-11-10T00:00:00","2022-11-11T00:00:00","2022-11-12T00:00:00","2022-11-13T00:00:00","2022-11-14T00:00:00","2022-11-15T00:00:00","2022-11-16T00:00:00","2022-11-17T00:00:00","2022-11-18T00:00:00","2022-11-19T00:00:00","2022-11-20T00:00:00","2022-11-21T00:00:00","2022-11-22T00:00:00","2022-11-23T00:00:00","2022-11-24T00:00:00","2022-11-25T00:00:00","2022-11-26T00:00:00","2022-11-27T00:00:00","2022-11-28T00:00:00","2022-11-29T00:00:00","2022-11-30T00:00:00","2022-12-01T00:00:00","2022-12-02T00:00:00","2022-12-03T00:00:00","2022-12-04T00:00:00","2022-12-05T00:00:00","2022-12-06T00:00:00","2022-12-07T00:00:00","2022-12-08T00:00:00","2022-12-09T00:00:00","2022-12-10T00:00:00","2022-12-11T00:00:00","2022-12-12T00:00:00","2022-12-13T00:00:00","2022-12-14T00:00:00","2022-12-15T00:00:00","2022-12-16T00:00:00","2022-12-17T00:00:00","2022-12-18T00:00:00","2022-12-19T00:00:00","2022-12-20T00:00:00","2022-12-21T00:00:00","2022-12-22T00:00:00","2022-12-23T00:00:00","2022-12-24T00:00:00","2022-12-25T00:00:00","2022-12-26T00:00:00","2022-12-27T00:00:00","2022-12-28T00:00:00","2022-12-29T00:00:00","2022-12-30T00:00:00","2022-12-31T00:00:00"],"xaxis":"x","y":[16.098387096774193,15.695161290322586,15.291935483870965,14.88870967741936,14.485483870967744,14.082258064516129,13.679032258064511,13.275806451612906,12.87258064516128,12.469354838709696,12.066129032258047,11.662903225806463,11.259677419354837,10.856451612903232,10.453225806451627,10.049999999999956,9.646774193548417,9.243548387096789,8.840322580645163,8.437096774193536,8.033870967741908,7.630645161290325,7.227419354838742,6.824193548387072,6.420967741935531,6.017741935483818,5.614516129032277,5.211290322580651,4.808064516129024,4.404838709677484,4.00161290322577,3.7857142857142856,3.7571428571428576,3.7285714285714278,3.7000000000000015,3.6714285714285695,3.642857142857142,3.6142857142857165,3.585714285714283,3.5571428571428556,3.5285714285714334,3.5,3.4714285714285724,3.4428571428571444,3.414285714285711,3.385714285714278,3.3571428571428554,3.328571428571433,3.3,3.2714285714285776,3.242857142857144,3.2142857142857113,3.1857142857142886,3.1571428571428557,3.1285714285714223,3.1,3.0714285714285667,3.0428571428571445,3.014285714285722,3.558064516129032,4.674193548387097,5.790322580645161,6.9064516129032265,8.022580645161286,9.138709677419355,10.254838709677424,11.370967741935488,12.487096774193546,13.603225806451606,14.719354838709686,15.835483870967723,16.951612903225815,18.067741935483884,19.18387096774193,20.300000000000022,21.41612903225805,22.53225806451614,23.648387096774186,24.764516129032234,25.880645161290325,26.996774193548415,28.112903225806463,29.229032258064425,30.34516129032269,31.461290322580563,32.57741935483878,33.69354838709675,34.80967741935479,35.92580645161293,37.04193548387098,37.27666666666667,36.629999999999995,35.983333333333334,35.336666666666666,34.69,34.04333333333338,33.396666666666626,32.75,32.10333333333333,31.456666666666667,30.81000000000004,30.16333333333329,29.516666666666666,28.870000000000086,28.223333333333247,27.576666666666753,26.929999999999914,26.283333333333335,25.636666666666667,24.99,24.34333333333342,23.69666666666658,23.05,22.403333333333332,21.756666666666668,21.110000000000085,20.463333333333246,19.816666666666666,19.17,18.523333333333333,18.085483870967742,17.856451612903225,17.62741935483871,17.398387096774197,17.169354838709666,16.940322580645162,16.711290322580652,16.482258064516117,16.253225806451628,16.024193548387093,15.795161290322559,15.566129032258091,15.337096774193537,15.108064516129067,14.879032258064468,14.65,14.42096774193553,14.191935483870934,13.962903225806464,13.73387096774191,13.50483870967744,13.275806451612885,13.046774193548416,12.81774193548386,12.588709677419349,12.359677419354881,12.13064516129024,11.901612903225857,11.672580645161302,11.443548387096746,11.21451612903219,11.129999999999999,11.190000000000001,11.25,11.309999999999995,11.370000000000005,11.43,11.49,11.55,11.61,11.67,11.73,11.789999999999978,11.850000000000021,11.91,11.97,12.03,12.09,12.15,12.21,12.27,12.33,12.39,12.45,12.51,12.57,12.629999999999956,12.690000000000044,12.75,12.81,12.87,12.888709677419355,12.866129032258064,12.843548387096778,12.820967741935478,12.798387096774198,12.775806451612896,12.753225806451615,12.730645161290337,12.708064516129024,12.685483870967744,12.662903225806442,12.640322580645185,12.617741935483862,12.595161290322581,12.57258064516128,12.55,12.527419354838742,12.504838709677397,12.482258064516138,12.459677419354794,12.437096774193579,12.414516129032277,12.391935483870933,12.369354838709675,12.346774193548374,12.324193548387115,12.301612903225813,12.279032258064513,12.256451612903211,12.233870967741952,12.21129032258065,12.183870967741935,12.151612903225802,12.11935483870968,12.087096774193547,12.05483870967742,12.02258064516128,11.990322580645163,11.958064516129035,11.925806451612907,11.893548387096768,11.86129032258065,11.829032258064512,11.796774193548394,11.764516129032234,11.732258064516138,11.7,11.667741935483884,11.635483870967722,11.603225806451627,11.570967741935489,11.53870967741935,11.506451612903211,11.474193548387115,11.441935483870976,11.409677419354837,11.377419354838699,11.34516129032256,11.312903225806464,11.280645161290282,11.24838709677423,11.216129032258047,11.193333333333333,11.179999999999998,11.16666666666667,11.153333333333327,11.140000000000006,11.126666666666667,11.113333333333323,11.10000000000001,11.086666666666645,11.073333333333355,11.06,11.046666666666667,11.033333333333333,11.019999999999978,11.006666666666689,10.993333333333334,10.979999999999979,10.966666666666688,10.953333333333333,10.94,10.926666666666666,10.913333333333334,10.9,10.886666666666667,10.873333333333333,10.86,10.846666666666666,10.833333333333334,10.82,10.806666666666667,10.869354838709679,11.008064516129034,11.146774193548387,11.285483870967743,11.424193548387098,11.562903225806453,11.701612903225792,11.840322580645173,11.979032258064523,12.117741935483862,12.256451612903211,12.395161290322603,12.533870967741953,12.672580645161279,12.811290322580628,12.95,13.08870967741937,13.227419354838698,13.366129032258048,13.50483870967744,13.64354838709679,13.782258064516096,13.920967741935488,14.059677419354838,14.19838709677423,14.337096774193537,14.475806451612884,14.614516129032278,14.753225806451626,14.891935483870933,15.030645161290325,15.086666666666666,15.06,15.033333333333333,15.006666666666666,14.98,14.953333333333333,14.926666666666666,14.9,14.873333333333333,14.846666666666666,14.82,14.793333333333333,14.766666666666667,14.74,14.713333333333333,14.686666666666667,14.66,14.633333333333333,14.606666666666667,14.58,14.553333333333333,14.526666666666667,14.5,14.473333333333333,14.446666666666667,14.42,14.393333333333333,14.366666666666667,14.34,14.313333333333333,14.25967741935484,14.179032258064515,14.098387096774198,14.017741935483867,13.937096774193558,13.856451612903221,13.775806451612917,13.69516129032256,13.614516129032255,13.533870967741953,13.453225806451606,13.37258064516128,13.291935483870997,13.211290322580629,13.130645161290303,13.050000000000043,12.969354838709675,12.888709677419307,12.808064516129066,12.727419354838698,12.646774193548373,12.566129032258091,12.485483870967723,12.40483870967744,12.324193548387115,12.243548387096746,12.162903225806463,12.08225806451614,12.00161290322577,11.92096774193553,11.84032258064512],"yaxis":"y","type":"scattergl"},{"hovertemplate":"variable=not diverted\u003cbr\u003etime=%{x}\u003cbr\u003evalue=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"not diverted","line":{"color":"#19d3f3","dash":"solid"},"marker":{"symbol":"circle"},"mode":"lines","name":"not diverted","showlegend":true,"x":["2022-01-01T00:00:00","2022-01-02T00:00:00","2022-01-03T00:00:00","2022-01-04T00:00:00","2022-01-05T00:00:00","2022-01-06T00:00:00","2022-01-07T00:00:00","2022-01-08T00:00:00","2022-01-09T00:00:00","2022-01-10T00:00:00","2022-01-11T00:00:00","2022-01-12T00:00:00","2022-01-13T00:00:00","2022-01-14T00:00:00","2022-01-15T00:00:00","2022-01-16T00:00:00","2022-01-17T00:00:00","2022-01-18T00:00:00","2022-01-19T00:00:00","2022-01-20T00:00:00","2022-01-21T00:00:00","2022-01-22T00:00:00","2022-01-23T00:00:00","2022-01-24T00:00:00","2022-01-25T00:00:00","2022-01-26T00:00:00","2022-01-27T00:00:00","2022-01-28T00:00:00","2022-01-29T00:00:00","2022-01-30T00:00:00","2022-01-31T00:00:00","2022-02-01T00:00:00","2022-02-02T00:00:00","2022-02-03T00:00:00","2022-02-04T00:00:00","2022-02-05T00:00:00","2022-02-06T00:00:00","2022-02-07T00:00:00","2022-02-08T00:00:00","2022-02-09T00:00:00","2022-02-10T00:00:00","2022-02-11T00:00:00","2022-02-12T00:00:00","2022-02-13T00:00:00","2022-02-14T00:00:00","2022-02-15T00:00:00","2022-02-16T00:00:00","2022-02-17T00:00:00","2022-02-18T00:00:00","2022-02-19T00:00:00","2022-02-20T00:00:00","2022-02-21T00:00:00","2022-02-22T00:00:00","2022-02-23T00:00:00","2022-02-24T00:00:00","2022-02-25T00:00:00","2022-02-26T00:00:00","2022-02-27T00:00:00","2022-02-28T00:00:00","2022-03-01T00:00:00","2022-03-02T00:00:00","2022-03-03T00:00:00","2022-03-04T00:00:00","2022-03-05T00:00:00","2022-03-06T00:00:00","2022-03-07T00:00:00","2022-03-08T00:00:00","2022-03-09T00:00:00","2022-03-10T00:00:00","2022-03-11T00:00:00","2022-03-12T00:00:00","2022-03-13T00:00:00","2022-03-14T00:00:00","2022-03-15T00:00:00","2022-03-16T00:00:00","2022-03-17T00:00:00","2022-03-18T00:00:00","2022-03-19T00:00:00","2022-03-20T00:00:00","2022-03-21T00:00:00","2022-03-22T00:00:00","2022-03-23T00:00:00","2022-03-24T00:00:00","2022-03-25T00:00:00","2022-03-26T00:00:00","2022-03-27T00:00:00","2022-03-28T00:00:00","2022-03-29T00:00:00","2022-03-30T00:00:00","2022-03-31T00:00:00","2022-04-01T00:00:00","2022-04-02T00:00:00","2022-04-03T00:00:00","2022-04-04T00:00:00","2022-04-05T00:00:00","2022-04-06T00:00:00","2022-04-07T00:00:00","2022-04-08T00:00:00","2022-04-09T00:00:00","2022-04-10T00:00:00","2022-04-11T00:00:00","2022-04-12T00:00:00","2022-04-13T00:00:00","2022-04-14T00:00:00","2022-04-15T00:00:00","2022-04-16T00:00:00","2022-04-17T00:00:00","2022-04-18T00:00:00","2022-04-19T00:00:00","2022-04-20T00:00:00","2022-04-21T00:00:00","2022-04-22T00:00:00","2022-04-23T00:00:00","2022-04-24T00:00:00","2022-04-25T00:00:00","2022-04-26T00:00:00","2022-04-27T00:00:00","2022-04-28T00:00:00","2022-04-29T00:00:00","2022-04-30T00:00:00","2022-05-01T00:00:00","2022-05-02T00:00:00","2022-05-03T00:00:00","2022-05-04T00:00:00","2022-05-05T00:00:00","2022-05-06T00:00:00","2022-05-07T00:00:00","2022-05-08T00:00:00","2022-05-09T00:00:00","2022-05-10T00:00:00","2022-05-11T00:00:00","2022-05-12T00:00:00","2022-05-13T00:00:00","2022-05-14T00:00:00","2022-05-15T00:00:00","2022-05-16T00:00:00","2022-05-17T00:00:00","2022-05-18T00:00:00","2022-05-19T00:00:00","2022-05-20T00:00:00","2022-05-21T00:00:00","2022-05-22T00:00:00","2022-05-23T00:00:00","2022-05-24T00:00:00","2022-05-25T00:00:00","2022-05-26T00:00:00","2022-05-27T00:00:00","2022-05-28T00:00:00","2022-05-29T00:00:00","2022-05-30T00:00:00","2022-05-31T00:00:00","2022-06-01T00:00:00","2022-06-02T00:00:00","2022-06-03T00:00:00","2022-06-04T00:00:00","2022-06-05T00:00:00","2022-06-06T00:00:00","2022-06-07T00:00:00","2022-06-08T00:00:00","2022-06-09T00:00:00","2022-06-10T00:00:00","2022-06-11T00:00:00","2022-06-12T00:00:00","2022-06-13T00:00:00","2022-06-14T00:00:00","2022-06-15T00:00:00","2022-06-16T00:00:00","2022-06-17T00:00:00","2022-06-18T00:00:00","2022-06-19T00:00:00","2022-06-20T00:00:00","2022-06-21T00:00:00","2022-06-22T00:00:00","2022-06-23T00:00:00","2022-06-24T00:00:00","2022-06-25T00:00:00","2022-06-26T00:00:00","2022-06-27T00:00:00","2022-06-28T00:00:00","2022-06-29T00:00:00","2022-06-30T00:00:00","2022-07-01T00:00:00","2022-07-02T00:00:00","2022-07-03T00:00:00","2022-07-04T00:00:00","2022-07-05T00:00:00","2022-07-06T00:00:00","2022-07-07T00:00:00","2022-07-08T00:00:00","2022-07-09T00:00:00","2022-07-10T00:00:00","2022-07-11T00:00:00","2022-07-12T00:00:00","2022-07-13T00:00:00","2022-07-14T00:00:00","2022-07-15T00:00:00","2022-07-16T00:00:00","2022-07-17T00:00:00","2022-07-18T00:00:00","2022-07-19T00:00:00","2022-07-20T00:00:00","2022-07-21T00:00:00","2022-07-22T00:00:00","2022-07-23T00:00:00","2022-07-24T00:00:00","2022-07-25T00:00:00","2022-07-26T00:00:00","2022-07-27T00:00:00","2022-07-28T00:00:00","2022-07-29T00:00:00","2022-07-30T00:00:00","2022-07-31T00:00:00","2022-08-01T00:00:00","2022-08-02T00:00:00","2022-08-03T00:00:00","2022-08-04T00:00:00","2022-08-05T00:00:00","2022-08-06T00:00:00","2022-08-07T00:00:00","2022-08-08T00:00:00","2022-08-09T00:00:00","2022-08-10T00:00:00","2022-08-11T00:00:00","2022-08-12T00:00:00","2022-08-13T00:00:00","2022-08-14T00:00:00","2022-08-15T00:00:00","2022-08-16T00:00:00","2022-08-17T00:00:00","2022-08-18T00:00:00","2022-08-19T00:00:00","2022-08-20T00:00:00","2022-08-21T00:00:00","2022-08-22T00:00:00","2022-08-23T00:00:00","2022-08-24T00:00:00","2022-08-25T00:00:00","2022-08-26T00:00:00","2022-08-27T00:00:00","2022-08-28T00:00:00","2022-08-29T00:00:00","2022-08-30T00:00:00","2022-08-31T00:00:00","2022-09-01T00:00:00","2022-09-02T00:00:00","2022-09-03T00:00:00","2022-09-04T00:00:00","2022-09-05T00:00:00","2022-09-06T00:00:00","2022-09-07T00:00:00","2022-09-08T00:00:00","2022-09-09T00:00:00","2022-09-10T00:00:00","2022-09-11T00:00:00","2022-09-12T00:00:00","2022-09-13T00:00:00","2022-09-14T00:00:00","2022-09-15T00:00:00","2022-09-16T00:00:00","2022-09-17T00:00:00","2022-09-18T00:00:00","2022-09-19T00:00:00","2022-09-20T00:00:00","2022-09-21T00:00:00","2022-09-22T00:00:00","2022-09-23T00:00:00","2022-09-24T00:00:00","2022-09-25T00:00:00","2022-09-26T00:00:00","2022-09-27T00:00:00","2022-09-28T00:00:00","2022-09-29T00:00:00","2022-09-30T00:00:00","2022-10-01T00:00:00","2022-10-02T00:00:00","2022-10-03T00:00:00","2022-10-04T00:00:00","2022-10-05T00:00:00","2022-10-06T00:00:00","2022-10-07T00:00:00","2022-10-08T00:00:00","2022-10-09T00:00:00","2022-10-10T00:00:00","2022-10-11T00:00:00","2022-10-12T00:00:00","2022-10-13T00:00:00","2022-10-14T00:00:00","2022-10-15T00:00:00","2022-10-16T00:00:00","2022-10-17T00:00:00","2022-10-18T00:00:00","2022-10-19T00:00:00","2022-10-20T00:00:00","2022-10-21T00:00:00","2022-10-22T00:00:00","2022-10-23T00:00:00","2022-10-24T00:00:00","2022-10-25T00:00:00","2022-10-26T00:00:00","2022-10-27T00:00:00","2022-10-28T00:00:00","2022-10-29T00:00:00","2022-10-30T00:00:00","2022-10-31T00:00:00","2022-11-01T00:00:00","2022-11-02T00:00:00","2022-11-03T00:00:00","2022-11-04T00:00:00","2022-11-05T00:00:00","2022-11-06T00:00:00","2022-11-07T00:00:00","2022-11-08T00:00:00","2022-11-09T00:00:00","2022-11-10T00:00:00","2022-11-11T00:00:00","2022-11-12T00:00:00","2022-11-13T00:00:00","2022-11-14T00:00:00","2022-11-15T00:00:00","2022-11-16T00:00:00","2022-11-17T00:00:00","2022-11-18T00:00:00","2022-11-19T00:00:00","2022-11-20T00:00:00","2022-11-21T00:00:00","2022-11-22T00:00:00","2022-11-23T00:00:00","2022-11-24T00:00:00","2022-11-25T00:00:00","2022-11-26T00:00:00","2022-11-27T00:00:00","2022-11-28T00:00:00","2022-11-29T00:00:00","2022-11-30T00:00:00","2022-12-01T00:00:00","2022-12-02T00:00:00","2022-12-03T00:00:00","2022-12-04T00:00:00","2022-12-05T00:00:00","2022-12-06T00:00:00","2022-12-07T00:00:00","2022-12-08T00:00:00","2022-12-09T00:00:00","2022-12-10T00:00:00","2022-12-11T00:00:00","2022-12-12T00:00:00","2022-12-13T00:00:00","2022-12-14T00:00:00","2022-12-15T00:00:00","2022-12-16T00:00:00","2022-12-17T00:00:00","2022-12-18T00:00:00","2022-12-19T00:00:00","2022-12-20T00:00:00","2022-12-21T00:00:00","2022-12-22T00:00:00","2022-12-23T00:00:00","2022-12-24T00:00:00","2022-12-25T00:00:00","2022-12-26T00:00:00","2022-12-27T00:00:00","2022-12-28T00:00:00","2022-12-29T00:00:00","2022-12-30T00:00:00","2022-12-31T00:00:00"],"xaxis":"x","y":[86.52321693666555,100.60101133931184,97.3129861812921,94.27131583156344,91.55062385121033,89.11336266398766,86.92455492470802,84.95383664759773,83.17286404982485,81.55963929050361,80.08889898551628,78.74554710370954,77.51120302363816,76.37116626033007,75.31301637703726,74.32577382449165,73.39985301290139,72.52651768653257,71.6988631076828,70.91033905150162,70.15563537029377,69.43005239858361,68.72915644128979,68.05011234101943,67.39233695494114,66.75364332534235,66.13216115314755,65.49415173000553,64.88171987673613,64.28164183864888,63.68823452759603,62.996028646192755,62.29517809921358,61.72665038461763,61.26756974166328,60.90624751273474,60.626864491782186,60.41713323984606,60.26671618245749,60.16722057832129,60.110501199602325,60.09098576625602,60.102038746276115,60.14004157114222,60.200927702854216,60.28121166025875,60.37764733065195,60.4877916909092,60.60960781393849,60.7414731542973,60.88189113919934,61.02960119826305,61.183475439282894,61.342588228072835,61.50613930427297,61.67347046687716,61.8440114350072,62.01728485744791,62.19285806310398,62.15124072385469,62.302289389617464,63.01888309859774,64.2119226974511,65.8019399810617,67.73164444037886,69.94690513115583,72.40081090954857,75.05275723273073,77.87549248400248,80.83767399296372,83.91697843981976,87.09625053117328,90.3569434292442,93.68855180967806,97.07920816537613,100.51721988731788,103.99981425591503,107.5150145787787,111.059275333077,114.6278516803268,118.21654488580508,121.82439626366175,125.44392436773964,129.08300939161813,132.7296984001539,136.38494390607295,140.04877566776065,143.7178652944678,147.3889916865155,150.20672790026222,152.428015505746,154.8023085310379,156.49177916190277,157.57926100708545,158.1630831414268,158.29821020640983,158.03425160658855,157.42833047742093,156.5200409368798,155.34557983878034,153.93492926388979,152.3166800864855,150.51511479345186,148.55091110992626,146.4425656635742,144.20658763547738,141.85848201762332,139.4069998567372,136.8671879791482,134.25248782663985,131.56665286523048,128.81835903549498,126.01421749361135,123.16122044219463,120.26578483052138,117.33079162004508,114.35917430845676,111.35093289576885,108.30952470205862,105.24953604339588,102.18526784543499,99.17536789258597,96.34481946590321,93.68993361142913,91.19685384222478,88.82584269259952,86.57248277290552,84.42341076171647,82.37057106541124,80.38514247652833,78.4707020309195,76.61718871700405,74.81532276904969,73.0555314382138,71.33575352076855,69.6485432005508,67.9908194543504,66.35896291340667,64.75133727392665,63.159505590407385,61.582799357093045,60.02091108079862,58.4720399768071,56.9337310259872,55.40424844231595,53.88248805170534,52.36742659371208,50.858113413259936,49.3537457287008,47.853693004374705,46.35717374616199,44.806046716029996,43.30795269466385,41.9448838358676,40.71837830028324,39.59247399535996,38.55505551490795,37.66730700696232,37.22625935850596,36.70443182558373,36.17854346487809,35.65237478637585,35.12641756050841,34.600727566908354,34.07486737733638,33.54884130589112,33.02284910054671,32.49692888262371,31.971000062191376,31.44502853989325,30.919044755912488,30.393073387369512,29.86710706828093,29.341132310402614,28.815149658051904,28.289167137344677,27.763187986474346,27.237209792291676,26.71123061929036,26.185251823600243,25.659275835330288,25.188569204931458,24.788193414776966,24.406276199878366,24.041284780687203,23.693951824591668,23.36364901756247,23.046669771519525,22.74032393090151,22.44565124221974,22.16429238460958,21.89386333109604,21.629776331809936,21.371674147681507,21.12384145125471,20.887303289445462,20.655834824128284,20.42426957750762,20.19833316323658,19.986651854962112,19.77268998950168,19.56412744064298,19.359789827813703,19.1586856483061,18.960696164882844,18.765762894346757,18.573911815840336,18.384870722658103,18.197712660520164,18.012623414907743,17.82961752615317,17.648562045235323,17.479498515413315,17.327857011821536,17.187860419907505,17.05611599514882,16.93197806460162,16.815537248193113,16.706374756917356,16.602767009627488,16.505735372843013,16.41420327283718,16.327421749049314,16.244810063380886,16.16669243672104,16.09248206966453,16.02159131468722,15.953341189702904,15.888032429392139,15.825837014839053,15.76624702843527,15.708191557040921,15.651593609717157,15.597332416496895,15.545705907949143,15.495360769455631,15.445044845414383,15.39610741822256,15.349865234759118,15.303743345789888,15.258438577400865,15.214032383039594,15.17071743419049,15.119283773879761,15.059534097860256,15.000922033110703,14.943680035620927,14.886793344534105,14.831584496340819,14.777052162413796,14.723184797225727,14.670059342257403,14.61752625722576,14.565280322346974,14.51360734054336,14.462585459227363,14.412272425332555,14.362035204111425,14.311974726093036,14.262227484142338,14.213002799581046,14.164227140736248,14.115633622537608,14.06711661685672,14.018675754834657,13.970498818788263,13.92265490177053,13.87502743838286,13.827459044128105,13.779908751834322,13.732458780325121,13.685194753698177,14.189033321462295,15.305632461679203,16.105376557122778,16.881835474393984,17.629925810214544,18.34400170566307,19.038137049697063,19.704648814209634,20.353977201048423,20.985719837929917,21.601600957159643,22.197178528965622,22.788724207720822,23.353423235104593,23.91467906519219,24.464749082078537,25.007586177813785,25.54153199352324,26.069397078815985,26.588527832525195,27.10121162685807,27.608105353525392,28.109526702786486,28.606500937477858,29.098857915329713,29.587313331820898,30.072113657171528,30.553601783663034,31.03226088886184,31.507991022864978,31.981558252821365,32.45263242705828,32.961635580810686,33.48733711271926,33.96597674806361,34.39510979906552,34.78786235673836,35.1444366709005,35.559729794545305,36.08079344628034,36.51833198573854,36.88019795914215,37.18201725163117,37.42693142665757,37.62734719557895,37.788828526903636,37.91756840215513,38.01867521691378,38.097024998885615,38.15603133150273,38.19860742299645,38.227264285863,38.24365423645962,38.25035620399371,38.248255895169244,38.23894895774071,38.22326999101926,38.2024968919158,38.177214361294,38.14831008892369,38.11616168499545,38.081406833526714,38.11513441294708,38.27529466053678,38.51309507965765,38.809915495647324,39.15958915485552,39.55621333535347,39.99208036115324,40.46036580855372,40.95629056962828,41.47480413833978,42.01287641456282,42.56729651945333,43.135823147702546,43.716392634386814,44.30673515616468,44.9062428242934,45.51291936751041,46.12496586598456,46.741851893299156,47.36354627804348,47.989465895557295,48.618163377672985,49.24923731656814,49.88266204247044,50.51804135804375,51.15512413921456,51.79352249584816,52.43287390816267,53.073330555721014,53.714707813740326,54.35689400452155],"yaxis":"y","type":"scattergl"},{"hovertemplate":"variable=sea\u003cbr\u003etime=%{x}\u003cbr\u003evalue=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"sea","line":{"color":"#FF6692","dash":"solid"},"marker":{"symbol":"circle"},"mode":"lines","name":"sea","showlegend":true,"x":["2022-01-01T00:00:00","2022-01-02T00:00:00","2022-01-03T00:00:00","2022-01-04T00:00:00","2022-01-05T00:00:00","2022-01-06T00:00:00","2022-01-07T00:00:00","2022-01-08T00:00:00","2022-01-09T00:00:00","2022-01-10T00:00:00","2022-01-11T00:00:00","2022-01-12T00:00:00","2022-01-13T00:00:00","2022-01-14T00:00:00","2022-01-15T00:00:00","2022-01-16T00:00:00","2022-01-17T00:00:00","2022-01-18T00:00:00","2022-01-19T00:00:00","2022-01-20T00:00:00","2022-01-21T00:00:00","2022-01-22T00:00:00","2022-01-23T00:00:00","2022-01-24T00:00:00","2022-01-25T00:00:00","2022-01-26T00:00:00","2022-01-27T00:00:00","2022-01-28T00:00:00","2022-01-29T00:00:00","2022-01-30T00:00:00","2022-01-31T00:00:00","2022-02-01T00:00:00","2022-02-02T00:00:00","2022-02-03T00:00:00","2022-02-04T00:00:00","2022-02-05T00:00:00","2022-02-06T00:00:00","2022-02-07T00:00:00","2022-02-08T00:00:00","2022-02-09T00:00:00","2022-02-10T00:00:00","2022-02-11T00:00:00","2022-02-12T00:00:00","2022-02-13T00:00:00","2022-02-14T00:00:00","2022-02-15T00:00:00","2022-02-16T00:00:00","2022-02-17T00:00:00","2022-02-18T00:00:00","2022-02-19T00:00:00","2022-02-20T00:00:00","2022-02-21T00:00:00","2022-02-22T00:00:00","2022-02-23T00:00:00","2022-02-24T00:00:00","2022-02-25T00:00:00","2022-02-26T00:00:00","2022-02-27T00:00:00","2022-02-28T00:00:00","2022-03-01T00:00:00","2022-03-02T00:00:00","2022-03-03T00:00:00","2022-03-04T00:00:00","2022-03-05T00:00:00","2022-03-06T00:00:00","2022-03-07T00:00:00","2022-03-08T00:00:00","2022-03-09T00:00:00","2022-03-10T00:00:00","2022-03-11T00:00:00","2022-03-12T00:00:00","2022-03-13T00:00:00","2022-03-14T00:00:00","2022-03-15T00:00:00","2022-03-16T00:00:00","2022-03-17T00:00:00","2022-03-18T00:00:00","2022-03-19T00:00:00","2022-03-20T00:00:00","2022-03-21T00:00:00","2022-03-22T00:00:00","2022-03-23T00:00:00","2022-03-24T00:00:00","2022-03-25T00:00:00","2022-03-26T00:00:00","2022-03-27T00:00:00","2022-03-28T00:00:00","2022-03-29T00:00:00","2022-03-30T00:00:00","2022-03-31T00:00:00","2022-04-01T00:00:00","2022-04-02T00:00:00","2022-04-03T00:00:00","2022-04-04T00:00:00","2022-04-05T00:00:00","2022-04-06T00:00:00","2022-04-07T00:00:00","2022-04-08T00:00:00","2022-04-09T00:00:00","2022-04-10T00:00:00","2022-04-11T00:00:00","2022-04-12T00:00:00","2022-04-13T00:00:00","2022-04-14T00:00:00","2022-04-15T00:00:00","2022-04-16T00:00:00","2022-04-17T00:00:00","2022-04-18T00:00:00","2022-04-19T00:00:00","2022-04-20T00:00:00","2022-04-21T00:00:00","2022-04-22T00:00:00","2022-04-23T00:00:00","2022-04-24T00:00:00","2022-04-25T00:00:00","2022-04-26T00:00:00","2022-04-27T00:00:00","2022-04-28T00:00:00","2022-04-29T00:00:00","2022-04-30T00:00:00","2022-05-01T00:00:00","2022-05-02T00:00:00","2022-05-03T00:00:00","2022-05-04T00:00:00","2022-05-05T00:00:00","2022-05-06T00:00:00","2022-05-07T00:00:00","2022-05-08T00:00:00","2022-05-09T00:00:00","2022-05-10T00:00:00","2022-05-11T00:00:00","2022-05-12T00:00:00","2022-05-13T00:00:00","2022-05-14T00:00:00","2022-05-15T00:00:00","2022-05-16T00:00:00","2022-05-17T00:00:00","2022-05-18T00:00:00","2022-05-19T00:00:00","2022-05-20T00:00:00","2022-05-21T00:00:00","2022-05-22T00:00:00","2022-05-23T00:00:00","2022-05-24T00:00:00","2022-05-25T00:00:00","2022-05-26T00:00:00","2022-05-27T00:00:00","2022-05-28T00:00:00","2022-05-29T00:00:00","2022-05-30T00:00:00","2022-05-31T00:00:00","2022-06-01T00:00:00","2022-06-02T00:00:00","2022-06-03T00:00:00","2022-06-04T00:00:00","2022-06-05T00:00:00","2022-06-06T00:00:00","2022-06-07T00:00:00","2022-06-08T00:00:00","2022-06-09T00:00:00","2022-06-10T00:00:00","2022-06-11T00:00:00","2022-06-12T00:00:00","2022-06-13T00:00:00","2022-06-14T00:00:00","2022-06-15T00:00:00","2022-06-16T00:00:00","2022-06-17T00:00:00","2022-06-18T00:00:00","2022-06-19T00:00:00","2022-06-20T00:00:00","2022-06-21T00:00:00","2022-06-22T00:00:00","2022-06-23T00:00:00","2022-06-24T00:00:00","2022-06-25T00:00:00","2022-06-26T00:00:00","2022-06-27T00:00:00","2022-06-28T00:00:00","2022-06-29T00:00:00","2022-06-30T00:00:00","2022-07-01T00:00:00","2022-07-02T00:00:00","2022-07-03T00:00:00","2022-07-04T00:00:00","2022-07-05T00:00:00","2022-07-06T00:00:00","2022-07-07T00:00:00","2022-07-08T00:00:00","2022-07-09T00:00:00","2022-07-10T00:00:00","2022-07-11T00:00:00","2022-07-12T00:00:00","2022-07-13T00:00:00","2022-07-14T00:00:00","2022-07-15T00:00:00","2022-07-16T00:00:00","2022-07-17T00:00:00","2022-07-18T00:00:00","2022-07-19T00:00:00","2022-07-20T00:00:00","2022-07-21T00:00:00","2022-07-22T00:00:00","2022-07-23T00:00:00","2022-07-24T00:00:00","2022-07-25T00:00:00","2022-07-26T00:00:00","2022-07-27T00:00:00","2022-07-28T00:00:00","2022-07-29T00:00:00","2022-07-30T00:00:00","2022-07-31T00:00:00","2022-08-01T00:00:00","2022-08-02T00:00:00","2022-08-03T00:00:00","2022-08-04T00:00:00","2022-08-05T00:00:00","2022-08-06T00:00:00","2022-08-07T00:00:00","2022-08-08T00:00:00","2022-08-09T00:00:00","2022-08-10T00:00:00","2022-08-11T00:00:00","2022-08-12T00:00:00","2022-08-13T00:00:00","2022-08-14T00:00:00","2022-08-15T00:00:00","2022-08-16T00:00:00","2022-08-17T00:00:00","2022-08-18T00:00:00","2022-08-19T00:00:00","2022-08-20T00:00:00","2022-08-21T00:00:00","2022-08-22T00:00:00","2022-08-23T00:00:00","2022-08-24T00:00:00","2022-08-25T00:00:00","2022-08-26T00:00:00","2022-08-27T00:00:00","2022-08-28T00:00:00","2022-08-29T00:00:00","2022-08-30T00:00:00","2022-08-31T00:00:00","2022-09-01T00:00:00","2022-09-02T00:00:00","2022-09-03T00:00:00","2022-09-04T00:00:00","2022-09-05T00:00:00","2022-09-06T00:00:00","2022-09-07T00:00:00","2022-09-08T00:00:00","2022-09-09T00:00:00","2022-09-10T00:00:00","2022-09-11T00:00:00","2022-09-12T00:00:00","2022-09-13T00:00:00","2022-09-14T00:00:00","2022-09-15T00:00:00","2022-09-16T00:00:00","2022-09-17T00:00:00","2022-09-18T00:00:00","2022-09-19T00:00:00","2022-09-20T00:00:00","2022-09-21T00:00:00","2022-09-22T00:00:00","2022-09-23T00:00:00","2022-09-24T00:00:00","2022-09-25T00:00:00","2022-09-26T00:00:00","2022-09-27T00:00:00","2022-09-28T00:00:00","2022-09-29T00:00:00","2022-09-30T00:00:00","2022-10-01T00:00:00","2022-10-02T00:00:00","2022-10-03T00:00:00","2022-10-04T00:00:00","2022-10-05T00:00:00","2022-10-06T00:00:00","2022-10-07T00:00:00","2022-10-08T00:00:00","2022-10-09T00:00:00","2022-10-10T00:00:00","2022-10-11T00:00:00","2022-10-12T00:00:00","2022-10-13T00:00:00","2022-10-14T00:00:00","2022-10-15T00:00:00","2022-10-16T00:00:00","2022-10-17T00:00:00","2022-10-18T00:00:00","2022-10-19T00:00:00","2022-10-20T00:00:00","2022-10-21T00:00:00","2022-10-22T00:00:00","2022-10-23T00:00:00","2022-10-24T00:00:00","2022-10-25T00:00:00","2022-10-26T00:00:00","2022-10-27T00:00:00","2022-10-28T00:00:00","2022-10-29T00:00:00","2022-10-30T00:00:00","2022-10-31T00:00:00","2022-11-01T00:00:00","2022-11-02T00:00:00","2022-11-03T00:00:00","2022-11-04T00:00:00","2022-11-05T00:00:00","2022-11-06T00:00:00","2022-11-07T00:00:00","2022-11-08T00:00:00","2022-11-09T00:00:00","2022-11-10T00:00:00","2022-11-11T00:00:00","2022-11-12T00:00:00","2022-11-13T00:00:00","2022-11-14T00:00:00","2022-11-15T00:00:00","2022-11-16T00:00:00","2022-11-17T00:00:00","2022-11-18T00:00:00","2022-11-19T00:00:00","2022-11-20T00:00:00","2022-11-21T00:00:00","2022-11-22T00:00:00","2022-11-23T00:00:00","2022-11-24T00:00:00","2022-11-25T00:00:00","2022-11-26T00:00:00","2022-11-27T00:00:00","2022-11-28T00:00:00","2022-11-29T00:00:00","2022-11-30T00:00:00","2022-12-01T00:00:00","2022-12-02T00:00:00","2022-12-03T00:00:00","2022-12-04T00:00:00","2022-12-05T00:00:00","2022-12-06T00:00:00","2022-12-07T00:00:00","2022-12-08T00:00:00","2022-12-09T00:00:00","2022-12-10T00:00:00","2022-12-11T00:00:00","2022-12-12T00:00:00","2022-12-13T00:00:00","2022-12-14T00:00:00","2022-12-15T00:00:00","2022-12-16T00:00:00","2022-12-17T00:00:00","2022-12-18T00:00:00","2022-12-19T00:00:00","2022-12-20T00:00:00","2022-12-21T00:00:00","2022-12-22T00:00:00","2022-12-23T00:00:00","2022-12-24T00:00:00","2022-12-25T00:00:00","2022-12-26T00:00:00","2022-12-27T00:00:00","2022-12-28T00:00:00","2022-12-29T00:00:00","2022-12-30T00:00:00","2022-12-31T00:00:00"],"xaxis":"x","y":[126.5849988888111,119.90658929279799,115.80303815325792,111.99254307446657,108.55582748507787,105.44774530333959,102.6266510053242,100.05661183231045,97.70435784998574,95.54407302501112,93.54650522934324,91.69410743103948,89.96561836245539,88.34421224189387,86.81562023223275,85.3672809199449,83.98826499335605,82.66862226797234,81.40051188936906,80.17644995898388,78.99056802047002,77.83733775057692,76.7119184334414,75.61101482669788,74.53396720342856,73.47827754384286,72.44181865608905,71.38711137587757,70.3609713326398,69.34858925551279,68.34367520614492,67.37612062268443,66.54946512091077,65.87028750829882,65.31289424119655,64.86419614563317,64.50639131296253,64.22587717754215,64.01109172778618,63.85269771944249,63.741656436933276,63.671779854426646,63.63570329421993,63.62942541161552,63.648455184027554,63.68894306263438,63.74723024925286,63.82069205259352,63.90703505403259,64.00449212445291,64.11138867051099,64.22634633810225,64.34810858347419,64.4756602500793,64.6081124970103,64.74474188962192,64.88491619836746,65.02810981394033,65.1738431540849,65.45057198581044,66.31659318283477,67.80235374524293,69.80796170284351,72.24521624836242,75.05109422010197,78.16638224763658,81.54001504219447,85.12793135696884,88.90071174954237,92.8244615230661,96.87513774908182,101.03412119917502,105.28178198982651,109.60631386621614,113.99529547431403,118.43584923471428,122.92523746195629,127.44969714632603,132.007037291008,136.59109625469893,141.19611817687888,145.82284416005567,150.46242466612546,155.1238410797812,159.79358155086084,164.4728056113615,169.161541235102,173.85616245571248,178.55284370200778,183.0541787661488,186.57878918009914,189.17214917593947,190.98161384438475,192.09927590597283,192.635059031226,192.65010743580206,192.20030508002196,191.35093900874946,190.14736489958923,188.6313098823762,186.83750663258135,184.7992051520033,182.5447686014504,180.09838334013466,177.481822961326,174.7144498138447,171.81461246026336,168.7926039199793,165.666289138845,162.45135349569358,159.15241057932928,155.7798600565297,152.34132404895567,148.84510305512833,145.2988398523408,141.7061814601609,138.07061983882554,134.39215498834295,130.67483523632916,126.93590346013507,123.28976168878928,119.80918285678106,116.53843565773357,113.4715801153608,110.59202135833877,107.85379054509656,105.25123555837406,102.76864548385143,100.39641967258244,98.10170260864827,95.88816134717729,93.74426913526047,91.65927873362546,89.62228436386971,87.63083801884342,85.67643147556042,83.75546180865003,81.86386587961681,79.99977277679575,78.15331896599795,76.32441517814166,74.51198325697194,72.71414682844171,70.9283754979212,69.15255885433544,67.3853636980581,65.62570336107855,63.87255322983143,62.12489339168701,60.38208026530842,58.643242885710464,56.940657155717965,55.39607841607597,54.00256703693006,52.7608091031622,51.631167909776174,50.59944505476841,49.734903434702645,49.3593265217791,48.894961336464796,48.425579345976864,47.95650998212673,47.48759739531687,47.01860340448165,46.54952158499095,46.08042860207458,45.61134940704538,45.142265386079195,44.673167703618056,44.204062042506756,43.73495226217917,43.26583800405816,42.79671953959321,42.327598063882306,41.85847406249907,41.38934784691643,40.920220460679246,40.4510930747594,39.98196619857241,39.512840037762565,39.04371521724319,38.57846175989619,38.13264696385021,37.70675830002736,37.300101447213024,36.91203558481402,36.54182269530992,36.18751860515387,35.84664390829426,35.51767737041745,35.200752294552,34.89590703412615,34.601201354552195,34.31413689545183,34.03469066058044,33.7646971604228,33.50359390882154,33.247465532532445,32.99424817610946,32.749693647093245,32.51002111699018,32.274606336793966,32.04326779995804,31.815538442322502,31.591425453893564,31.37064052079287,31.152924939267063,30.938130297820877,30.72584198402586,30.515711598291443,30.307636313979273,30.10159640158768,29.899061992231893,29.706145866653987,29.524492724990402,29.353199375200052,29.189535279320896,29.033567366616595,28.885901956505798,28.745120806178008,28.610432615829286,28.481695213265443,28.35838780902878,28.239591124907687,28.125457231888063,28.01540369760383,27.909160599184258,27.805984385104644,27.705802993239075,27.608577605488676,27.514208688675254,27.42200306316217,27.331547834219204,27.243022508585344,27.156823822144005,27.072504635028267,26.98911701051725,26.906804258346007,26.826135646998882,26.746674728377,26.668092018443126,26.59034044675805,26.51349759889146,26.437852489454325,26.363464701694472,26.29024837938172,26.21832792490169,26.146815146163657,26.077247634709433,26.008369166263275,25.94012308512297,25.87258877504755,25.805800711493248,25.739484386791787,25.673719042603064,25.608419197657042,25.543856378032103,25.479620633599936,25.41569808455253,25.351960672923813,25.288598733566424,25.225702727343197,25.16311708524823,25.100771821243345,25.038488147278073,24.976357801040564,24.914501981442726,24.85291778770034,24.791493217216598,24.73013093426548,24.668832296466938,24.607664289317196,24.732643379144093,25.549383790785516,26.49926974321129,27.425581511184575,28.32265470293109,29.184292705875855,30.02536392842178,30.83769372544079,31.63160739294633,32.40809416576944,33.16649148577617,33.90662278369069,34.636225399154206,35.34666935977285,36.04668716372163,36.736761790268396,37.41827715794521,38.091742356554775,38.75747456525487,39.41550692016604,40.06627772542062,40.710736163918064,41.349651089586594,41.983403883595706,42.61255539019075,43.23749791047639,43.858532232250326,44.476021678171776,45.09043443408002,45.70188031565536,46.31072742006293,46.917156827521545,47.507375849281196,48.057846909565505,48.557405816846426,49.003829075382264,49.410767528985936,49.77866815983973,50.212727593437386,50.762267937450495,51.22027046955294,51.59546555828165,51.90489674584181,52.15193250189501,52.350162909408965,52.50568100640895,52.625227412755294,52.71444071054459,52.77861405155173,52.82160815187075,52.846417775929524,52.856127219818255,52.852024041538435,52.83769258223198,52.81328642738914,52.781267662161476,52.74196560135594,52.697305858460844,52.64747695296727,52.593844982542926,52.5364884962583,52.476398929901144,52.43053574516817,52.46155591023465,52.57789683545353,52.759014473441574,52.99813156286876,53.28874455656167,53.62240721105425,53.99161248677031,54.391113609983414,54.81539969441239,55.26107010634961,55.724772759137885,56.20374749082106,56.696262216761156,57.19892714315819,57.712604538734865,58.23294092841171,58.7601485218908,59.29188954446327,59.82977733409239,60.3715319389298,60.91684128128544,61.46432022000904,62.01490225213546,62.567112209788625,63.12170530740034,63.67721315941049,64.23421723533284,64.79222975079108,65.35126934443635,65.91123366578861],"yaxis":"y","type":"scattergl"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmapgl":[{"type":"heatmapgl","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"time"}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"value"}},"legend":{"title":{"text":"Link"},"tracegroupgap":0},"title":{"text":"Flow [m3\u002fs]"}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('c2ef7569-f662-42a6-874e-2887655ac754');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../tutorial/irrigation-demand.html" class="pagination-link" aria-label="Irrigation demand">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Irrigation demand</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

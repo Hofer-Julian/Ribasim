@@ -1,1 +1,0 @@
-Sitemap: https://Deltares.github.io/Ribasim.jl/sitemap.xml
