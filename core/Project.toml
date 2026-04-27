@@ -1,8 +1,8 @@
 name = "Ribasim"
 uuid = "aac5e3d9-0b8f-4d4f-8241-b1a7a9632635"
+version = "2025.1.0"
 authors = ["Deltares and contributors <ribasim.info@deltares.nl>"]
 manifest = "../Manifest.toml"
-version = "2025.1.0"
 
 [deps]
 Accessors = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
@@ -85,7 +85,7 @@ Logging = "1"
 LoggingExtras = "1"
 Makie = "0.21, 0.22"
 MetaGraphsNext = "0.6, 0.7"
-OrdinaryDiffEqBDF = "1.1"
+OrdinaryDiffEqBDF = "1.1, 2"
 OrdinaryDiffEqCore = "1.3"
 OrdinaryDiffEqLowOrderRK = "1.1"
 OrdinaryDiffEqNonlinearSolve = "1.1"
